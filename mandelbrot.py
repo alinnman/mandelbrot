@@ -2,13 +2,13 @@ from matplotlib import pyplot as plt
 from numpy import ndarray, array, log, exp, frombuffer
 from os import environ
 from time import time
-from cplot import plot as complex_plot
+from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended. 
 from multiprocessing import Process, Semaphore, Queue, freeze_support
 import itertools
 from pickle import loads as ploads, dumps as pdumps
 
 DPI = 400
-#POWER = 2
+POWER = 2
 DIAGPOINTS =2000
 FIGSIZE=20
 ITERATIONS=10000
@@ -32,9 +32,15 @@ else:
 growthCounter = 0
 
 def iter (x, c):
-    result = x*x + c
+    global POWER
+    if POWER == 2:
+        # Using multiplication is a lot faster than **
+        result = x*x + c
+    else:
+        result = x**POWER + c    
     return result
 
+# The color map is used for caching color codes assigned
 colorCodeMap = {}
 def resetColorMap ():
     colorCodeMap = {}
@@ -43,20 +49,26 @@ def colorCode (counter):
     global colorFactor
     retVal = 0
     try:
+        # See if a cached result is available
         retVal = colorCodeMap [counter]
         return retVal
     except:
+        # No color code found in cache. Compute a new one. 
         retVal = (log(counter)**3/10)*1j*exp(-1j*counter*colorFactor)
+        # Cache the result
         colorCodeMap [counter] = retVal
         return retVal
 
 def reportGrowth ():
+    # Show progress
     global growthCounter
     growthCounter += 1
     if growthCounter % 10000 == 0:
         print(".", end='', flush=True)
 
 def growth (c):
+    # This is the iteration used to find convergence or divergence
+    # Escape count is calculated for divergence
     counter, result = 0, 0
 
     for i in range (0,ITERATIONS):
@@ -66,23 +78,28 @@ def growth (c):
         absDiffResult = abs(diffResult)
 
         if absDiffResult < 1e-6:
+            # Convergence/Repetition found
+            # A tiny criterion is needed to avoid artifacts
             reportGrowth ()
             if DEBUG:
                 print("S", end='', flush=True)
+            # Assign zero = convergence/looping = Black color
             return 0
         elif absDiffResult > 1e3:
+            # Divergence found. Find escape count and assign color. 
             reportGrowth ()
             cc = colorCode (counter)
             if DEBUG:
                 print("E", end='', flush=True)            
             return colorCode (counter)
         result = newResult
+    # Search exhausted. Assume convergence.     
     reportGrowth ()
     if DEBUG:
         print("!", end='', flush=True)
     return 0
 
-
+# Some test areas used. 
 COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
           [-0.4, 0.2, 0.5, 1.2, 2, 0],\
           [-0.2, -0.1, 1, 1.1, 2, 0],\
@@ -100,7 +117,8 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n):  
         yield l[i:i + n] 
 
-def F_simple (x, sema, queue1):
+def F_threaded (x, sema, queue1):
+    # Section for filling data used in multithreading
     try:
         retval = array([growth(ci) for ci in x])
         rp = pdumps (retval)
@@ -114,12 +132,15 @@ def F_simple (x, sema, queue1):
         sema.release ()
 
 def F (x):
+    # Callback for cplot
     global growthCounter
     growthCounter = 0
     if N_THREADS == 1:
+        # When non-threaded just fill the data. 
         retval = array([growth(ci) for ci in x])
         return retval   
     else:
+        # When threaded then split up the work in several worker threads (processes)
         sema = Semaphore(MAXRUNNINGPROCESSES)
         divided = list(divide_chunks(x, CHUNKLENGTH))
         divLength = len(divided)
@@ -132,7 +153,7 @@ def F (x):
                 print ("Main    : create and start thread ", str(index))
             queue1 = Queue ()
             sema.acquire ()           
-            x = Process(target=F_simple, args= (divided[index], sema, queue1))
+            x = Process(target=F_threaded, args= (divided[index], sema, queue1))
             processes.append(x)
             queues.append (queue1)
             x.start()
@@ -149,18 +170,18 @@ def F (x):
             if DEBUG:
                 print ("Main    : process ", str(index), "done")
             
-        retval22 = array(list(itertools.chain.from_iterable(results2)))
+        retval = array(list(itertools.chain.from_iterable(results2)))
         if DEBUG:
             print ("Data returned")
  
-        return retval22
+        return retval
         
 
 totalTotal = 0
 
 def main ():
     global totalTotal
-    for picNum in ([9]):
+    for picNum in ([9]):  # Change this loop for picking different pictures
 
         resetColorMap ()
         fig = plt.figure(figsize=(FIGSIZE,FIGSIZE),dpi=DPI) 
@@ -177,13 +198,14 @@ def main ():
         total = t1-t0
         print ("Execution time = " + str(total))
         totalTotal += total
-
-        fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI)
+        
+        fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed. 
         print ("Picture saved")
         plt.close ()
     print ("READY. Total execution time = " + str(totalTotal))
 
 if __name__ == '__main__':
+    # This main section needed for running on Windows
     freeze_support()
     main ()
 
