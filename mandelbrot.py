@@ -214,7 +214,7 @@ def main ():
         totalTotal += total
         
         fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) 
-        # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed. 
+        # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
         print ("Picture saved")
         plt.close ()
     print ("READY. Total execution time = " + str(totalTotal))
