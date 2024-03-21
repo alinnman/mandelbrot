@@ -41,7 +41,7 @@ def iter (x, c):
         # Using multiplication is a lot faster than **
         result = x*x + c
     else:
-        result = x**POWER + c    
+        result = x**POWER + c
     return result
 
 # The color map is used for caching color codes assigned
@@ -91,29 +91,29 @@ def growth (c):
             # A tiny criterion is needed to avoid artifacts
             reportGrowth ()
             if DEBUG:
-                print("S", end='', flush=True)  
+                print("S", end='', flush=True)
             # Assign zero = convergence/looping = Black color
             return 0
         elif newAbsDiffResult > DIVERGENCE_LIMIT:
-            # Divergence found. Find escape count and assign color. 
+            # Divergence found. Find escape count and assign color.
             reportGrowth ()
             if DEBUG:
-                print("E", end='', flush=True)              
+                print("E", end='', flush=True)
             if PARTIALESCAPECOUNT:
                 ratio = (log(DIVERGENCE_LIMIT) - log(absDiffResult)) / (log(newAbsDiffResult) - log(absDiffResult))
-                return colorCode (counter + 0.5 + ratio, False) 
+                return colorCode (counter + 0.5 + ratio, False)
             else:
                 cc = colorCode (counter)
                 return colorCode (counter, True)
         result = newResult
         absDiffResult = newAbsDiffResult
-    # Search exhausted. Assume convergence.     
+    # Search exhausted. Assume convergence.
     reportGrowth ()
     if DEBUG:
         print("!", end='', flush=True)
     return 0
 
-# Some test areas used. 
+# Some test areas used.
 COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
           [-0.4, 0.2, 0.5, 1.2, 2, 0],\
           [-0.2, -0.1, 1, 1.1, 2, 0],\
@@ -124,12 +124,12 @@ COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
           [-0.5603,-0.5600,-0.6201, -0.6198,3,0],\
           [-0.56014,-0.56006,-0.61993, -0.61987,4,0],\
           [-0.5600886, -0.5600883, -0.61988035, -0.6198800, 5,0]]
-          
+
 colorFactor = 0
 
-def divide_chunks(l, n): 
-    for i in range(0, len(l), n):  
-        yield l[i:i + n] 
+def divide_chunks(l, n):
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
 
 def F_threaded (x, sema, queue1):
     # Section for filling data used in multithreading
@@ -150,9 +150,9 @@ def F (x):
     global growthCounter
     growthCounter = 0
     if N_THREADS == 1:
-        # When non-threaded just fill the data. 
+        # When non-threaded just fill the data.
         retval = array([growth(ci) for ci in x])
-        return retval   
+        return retval
     else:
         # When threaded then split up the work in several worker threads (processes)
         sema = Semaphore(MAXRUNNINGPROCESSES)
@@ -166,7 +166,7 @@ def F (x):
             if DEBUG:
                 print ("Main    : create and start thread ", str(index))
             queue1 = Queue ()
-            sema.acquire ()           
+            sema.acquire ()
             x = Process(target=F_threaded, args= (divided[index], sema, queue1))
             processes.append(x)
             queues.append (queue1)
@@ -180,16 +180,15 @@ def F (x):
             returnedData = queues [index].get()
             returnedObject = ploads (returnedData)
             results2.append (returnedObject)
-            process.join()              
+            process.join()
             if DEBUG:
                 print ("Main    : process ", str(index), "done")
-            
+
         retval = array(list(itertools.chain.from_iterable(results2)))
         if DEBUG:
             print ("Data returned")
- 
+
         return retval
-        
 
 totalTotal = 0
 
@@ -212,7 +211,7 @@ def main ():
         total = t1-t0
         print ("Execution time = " + str(total))
         totalTotal += total
-        
+
         fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) 
         # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
         print ("Picture saved")
