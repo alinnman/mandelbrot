@@ -9,15 +9,19 @@ from pickle import loads as ploads, dumps as pdumps
 
 DPI = 400
 POWER = 2
-DIAGPOINTS =2000
+DIAGPOINTS =500
 FIGSIZE=20
 ITERATIONS=10000
 DEBUG=False
+
+DIVERGENCE_LIMIT = 1e3
+CONVERGENCE_LIMIT = 1e-6
 
 PARALELL = True
 CHUNKLENGTH = 100000
 #CHUNKLENGTH = 500000
 MAXRUNNINGPROCESSES = 4
+PARTIALESCAPECOUNT = True
 
 if PARALELL:
     N_THREADS = 2
@@ -45,19 +49,22 @@ colorCodeMap = {}
 def resetColorMap ():
     colorCodeMap = {}
 
-def colorCode (counter):
+def colorCode (counter, useCache):
     global colorFactor
     retVal = 0
-    try:
-        # See if a cached result is available
-        retVal = colorCodeMap [counter]
+    if useCache:
+        try:
+            # See if a cached result is available
+            retVal = colorCodeMap [counter]
+            return retVal
+        except:
+            # No color code found in cache. Compute a new one. 
+            retVal = (log(counter)**3/10)*1j*exp(-1j*counter*colorFactor)
+            # Cache the result
+            colorCodeMap [counter] = retVal
         return retVal
-    except:
-        # No color code found in cache. Compute a new one. 
-        retVal = (log(counter)**3/10)*1j*exp(-1j*counter*colorFactor)
-        # Cache the result
-        colorCodeMap [counter] = retVal
-        return retVal
+    else:
+        return (log(counter)**3/10)*1j*exp(-1j*counter*colorFactor)
 
 def reportGrowth ():
     # Show progress
@@ -69,30 +76,37 @@ def reportGrowth ():
 def growth (c):
     # This is the iteration used to find convergence or divergence
     # Escape count is calculated for divergence
-    counter, result = 0, 0
+    counter, result, absDiffResult = 0, 0, 1
+    global DIVERGENCE_LIMIT
+    global CONVERGENCE_LIMIT
 
     for i in range (0,ITERATIONS):
         counter += 1
         newResult = iter (result, c)
         diffResult = newResult - result
-        absDiffResult = abs(diffResult)
+        newAbsDiffResult = abs(diffResult)
 
-        if absDiffResult < 1e-6:
+        if newAbsDiffResult < CONVERGENCE_LIMIT:
             # Convergence/Repetition found
             # A tiny criterion is needed to avoid artifacts
             reportGrowth ()
             if DEBUG:
-                print("S", end='', flush=True)
+                print("S", end='', flush=True)  
             # Assign zero = convergence/looping = Black color
             return 0
-        elif absDiffResult > 1e3:
+        elif newAbsDiffResult > DIVERGENCE_LIMIT:
             # Divergence found. Find escape count and assign color. 
             reportGrowth ()
-            cc = colorCode (counter)
             if DEBUG:
-                print("E", end='', flush=True)            
-            return colorCode (counter)
+                print("E", end='', flush=True)              
+            if PARTIALESCAPECOUNT:
+                ratio = (log(DIVERGENCE_LIMIT) - log(absDiffResult)) / (log(newAbsDiffResult) - log(absDiffResult))
+                return colorCode (counter + 0.5 + ratio, False) 
+            else:
+                cc = colorCode (counter)
+                return colorCode (counter, True)
         result = newResult
+        absDiffResult = newAbsDiffResult
     # Search exhausted. Assume convergence.     
     reportGrowth ()
     if DEBUG:
@@ -181,7 +195,7 @@ totalTotal = 0
 
 def main ():
     global totalTotal
-    for picNum in ([9]):  # Change this loop for picking different pictures
+    for picNum in ([0]):  # Change this loop for picking different pictures
 
         resetColorMap ()
         fig = plt.figure(figsize=(FIGSIZE,FIGSIZE),dpi=DPI) 
