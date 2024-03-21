@@ -9,9 +9,9 @@ from pickle import loads as ploads, dumps as pdumps
 
 DPI = 400
 POWER = 2
-DIAGPOINTS =500
+DIAGPOINTS=1000
 FIGSIZE=20
-ITERATIONS=10000
+ITERATIONS=1000
 DEBUG=False
 
 DIVERGENCE_LIMIT = 1e3
@@ -21,7 +21,10 @@ PARALELL = True
 CHUNKLENGTH = 100000
 #CHUNKLENGTH = 500000
 MAXRUNNINGPROCESSES = 4
-PARTIALESCAPECOUNT = True
+PARTIALESCAPECOUNT = False
+#Experimental parameters which need to be adjusted for deep zooms with small gradients
+COLORSTEEPNESS = 3
+COLORDAMPENING = 1
 
 if PARALELL:
     N_THREADS = 2
@@ -48,9 +51,15 @@ def iter (x, c):
 colorCodeMap = {}
 def resetColorMap ():
     colorCodeMap = {}
+    
+def colorValue (counter, colorFactor):
+    global COLORSTEEPNESS
+    global COLORDAMPENING
+    return (log(counter)**COLORSTEEPNESS/10)*1j*exp(-1j*counter*colorFactor)/COLORDAMPENING   
 
 def colorCode (counter, useCache):
     global colorFactor
+    global COLORSTEEPNESS
     retVal = 0
     if useCache:
         try:
@@ -59,12 +68,12 @@ def colorCode (counter, useCache):
             return retVal
         except:
             # No color code found in cache. Compute a new one. 
-            retVal = (log(counter)**3/10)*1j*exp(-1j*counter*colorFactor)
+            retVal = colorValue (counter, colorFactor)
             # Cache the result
             colorCodeMap [counter] = retVal
-        return retVal
+            return retVal
     else:
-        return (log(counter)**3/10)*1j*exp(-1j*counter*colorFactor)
+        return colorValue (counter, colorFactor)
 
 def reportGrowth ():
     # Show progress
@@ -103,7 +112,6 @@ def growth (c):
                 ratio = (log(DIVERGENCE_LIMIT) - log(absDiffResult)) / (log(newAbsDiffResult) - log(absDiffResult))
                 return colorCode (counter + 0.5 + ratio, False)
             else:
-                cc = colorCode (counter)
                 return colorCode (counter, True)
         result = newResult
         absDiffResult = newAbsDiffResult
@@ -112,6 +120,9 @@ def growth (c):
     if DEBUG:
         print("!", end='', flush=True)
     return 0
+
+-0.7807937278339523
+-0.14686092684496543
 
 # Some test areas used.
 COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
@@ -123,7 +134,8 @@ COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
           [-0.74453892-1e-4,-0.74453892+1e-4,0.12172418-1e-4,0.12172418+1e-4, 5, 1],\
           [-0.5603,-0.5600,-0.6201, -0.6198,3,0],\
           [-0.56014,-0.56006,-0.61993, -0.61987,4,0],\
-          [-0.5600886, -0.5600883, -0.61988035, -0.6198800, 5,0]]
+          [-0.5600886, -0.5600883, -0.61988035, -0.6198800, 5,0],\
+          [-0.7807937278339523-1e-6, -0.7807937278339523+1e-6, -0.14686092684496543-1e-6, -0.14686092684496543+1e-6, 5, 0]]
 
 colorFactor = 0
 
@@ -194,7 +206,7 @@ totalTotal = 0
 
 def main ():
     global totalTotal
-    for picNum in ([0]):  # Change this loop for picking different pictures
+    for picNum in range(len(COORDS)):  # Change this loop for picking different pictures
 
         resetColorMap ()
         fig = plt.figure(figsize=(FIGSIZE,FIGSIZE),dpi=DPI) 
@@ -209,14 +221,18 @@ def main ():
                        add_colorbars=False, add_axes_labels=False)
         t1 = time()
         total = t1-t0
-        print ("Execution time = " + str(total))
+        print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
 
         fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) 
+        t2 = time()                
         # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
-        print ("Picture saved")
+        total = t2-t1
+        print ("Picture generated and saved. Time taken = " + str(round(total,2)))
+ 
+        totalTotal += total
         plt.close ()
-    print ("READY. Total execution time = " + str(totalTotal))
+    print ("READY. Total execution time = " + str(round(totalTotal,2)))
 
 if __name__ == '__main__':
     # This main section needed for running on Windows
