@@ -213,7 +213,8 @@ def main ():
         print ("Execution time = " + str(total))
         totalTotal += total
         
-        fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed. 
+        fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) 
+        # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed. 
         print ("Picture saved")
         plt.close ()
     print ("READY. Total execution time = " + str(totalTotal))
