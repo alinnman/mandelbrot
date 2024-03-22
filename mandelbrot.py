@@ -1,15 +1,19 @@
-from matplotlib import pyplot as plt
-from numpy import ndarray, array, log, exp, frombuffer
-from os import environ, path, makedirs
-from time import time
-from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended. 
-from multiprocessing import Process, Semaphore, Queue, freeze_support
-import itertools
-from pickle import loads as ploads, dumps as pdumps
+try:
+    # Lazy from matplotlib import pyplot as plt
+    from numpy import ndarray, array, log, exp, frombuffer
+    from os import environ, path, makedirs, _exit
+    # Lazy from time import time
+    # Lazy from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended. 
+    from multiprocessing import Process, Semaphore, Queue, freeze_support
+    # Lazy import itertools
+    from pickle import loads as ploads, dumps as pdumps
+except BaseException as be: 
+    print ("Interrupted while loading packages")
+    raise be
 
 DPI = 400
 POWER = 2
-DIAGPOINTS=2000
+DIAGPOINTS=500
 FIGSIZE=20
 ITERATIONS=1000
 DEBUG=False
@@ -17,7 +21,7 @@ DEBUG=False
 DIVERGENCE_LIMIT = 2
 CONVERGENCE_LIMIT = 1e-6
 
-PARALELL = True
+PARALELL = False
 CHUNKLENGTH = 100000
 #CHUNKLENGTH = 500000
 MAXRUNNINGPROCESSES = 4
@@ -103,7 +107,7 @@ def growth (c, colorFactor, nrOfIterations, offset):
             reportGrowth ()
             if DEBUG:
                 print("S", end='', flush=True)
-            # Assign zero = convergence/looping = Black color
+            # Assign zero = convergence = Black color
             return 0
         elif newAbsResult > DIVERGENCE_LIMIT:
             # Divergence found. Find escape count and assign color.
@@ -152,9 +156,12 @@ def F_threaded (x, sema, queue1, cf, ni, offset):
         queue1.put (rp)
         if DEBUG:
             print ("SENDING DONE")
-
+    except BaseException as ki:
+        queue1.close ()
+        raise ki
     finally:
         sema.release ()
+        
 
 def F (x):
     # Callback for cplot
@@ -168,40 +175,48 @@ def F (x):
         retval = array([growth(ci, colorFactor, nrOfIterations, offset) for ci in x])
         return retval
     else:
-        # When threaded then split up the work in several worker threads (processes)
-        sema = Semaphore(MAXRUNNINGPROCESSES)
-        divided = list(divide_chunks(x, CHUNKLENGTH))
-        divLength = len(divided)
-        processes = list()
-        queues = list ()
+        try:
+        
+            from itertools import chain
+        
+            # When threaded then split up the work in several worker threads (processes)
+            sema = Semaphore(MAXRUNNINGPROCESSES)
+            divided = list(divide_chunks(x, CHUNKLENGTH))
+            divLength = len(divided)
+            processes = list()
+            queues = list ()
 
-        results2 = list ()
-        for index in range(divLength):
-            if DEBUG:
-                print ("Main    : create and start thread ", str(index))
-            queue1 = Queue ()
-            sema.acquire ()
-            x = Process(target=F_threaded, args= (divided[index], sema, queue1, colorFactor, nrOfIterations, offset))
-            processes.append(x)
-            queues.append (queue1)
-            x.start()
-            if DEBUG:
-                print ("Started")
+            results2 = list ()
+            for index in range(divLength):
+                if DEBUG:
+                    print ("Main    : create and start thread ", str(index))
+                queue1 = Queue ()
+                sema.acquire ()          
+                x = Process(target=F_threaded, args= (divided[index], sema, queue1, colorFactor, nrOfIterations, offset))
+                processes.append(x)
+                queues.append (queue1)
+                x.start()
+                if DEBUG:
+                    print ("Started")
 
-        for index, process in enumerate(processes):
-            if DEBUG:
-                print ("Main    : before joining process ", str(index))
-            returnedData = queues [index].get()
-            returnedObject = ploads (returnedData)
-            results2.append (returnedObject)
-            process.join()
-            if DEBUG:
-                print ("Main    : process ", str(index), "done")
+            for index, process in enumerate(processes):
+                if DEBUG:
+                    print ("Main    : before joining process ", str(index))
+                returnedData = queues [index].get()
+                returnedObject = ploads (returnedData)
+                results2.append (returnedObject)
+                process.join()
+                if DEBUG:
+                    print ("Main    : process ", str(index), "done")
 
-        retval = array(list(itertools.chain.from_iterable(results2)))
-        if DEBUG:
-            print ("Data returned")
-        return retval
+            retval = array(list(chain.from_iterable(results2)))
+            if DEBUG:
+                print ("Data returned")
+            return retval
+        except BaseException as be:
+            print ("Worker process interrupted") # TODO Remove
+            raise be
+        
 
 totalTotal = 0
 
@@ -210,6 +225,11 @@ def main ():
     global colorFactor
     global nrOfIterations
     global offset
+    
+    from matplotlib import pyplot as plt
+    from cplot import plot as complex_plot
+    from time import time
+    
     for picNum in range(len(COORDS)):  # Change this loop for picking different pictures
 
         resetColorMap ()
