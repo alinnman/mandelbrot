@@ -121,9 +121,6 @@ def growth (c):
         print("!", end='', flush=True)
     return 0
 
--0.7807937278339523
--0.14686092684496543
-
 # Some test areas used.
 COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
           [-0.4, 0.2, 0.5, 1.2, 2, 0],\
