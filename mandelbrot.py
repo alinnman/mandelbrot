@@ -85,8 +85,8 @@ def reportGrowth ():
         print(".", end='', flush=True)
 
 def growth (c, colorFactor, nrOfIterations, offset):
-    # This is the iteration used to find convergence or divergence
-    # Escape count is calculated for divergence
+    # This is the iteration used to find convergence, looping or divergence
+    # Escape count can be calculated for divergence
     counter, result, absResult, absDiffResult = 0, 0, 1, 1
     global DIVERGENCE_LIMIT
     global CONVERGENCE_LIMIT
@@ -105,7 +105,7 @@ def growth (c, colorFactor, nrOfIterations, offset):
                 print("S", end='', flush=True)
             # Assign zero = convergence/looping = Black color
             return 0
-        elif newAbsResult > DIVERGENCE_LIMIT: # newAbsDiffResult > DIVERGENCE_LIMIT:
+        elif newAbsResult > DIVERGENCE_LIMIT:
             # Divergence found. Find escape count and assign color.
             reportGrowth ()
             if DEBUG:
@@ -118,7 +118,7 @@ def growth (c, colorFactor, nrOfIterations, offset):
         result = newResult
         absDiffResult = newAbsDiffResult
         absResult = newAbsResult
-    # Search exhausted. Assume convergence.
+    # Search exhausted. Assume looping.
     reportGrowth ()
     if DEBUG:
         print("!", end='', flush=True)
@@ -229,7 +229,6 @@ def main ():
             pass
 
         colorFactor = COORDS[picNum][5]
-        # print ("colorFactor = " + str(colorFactor)) # TODO Remove
         complex_plot(F,(COORDS[picNum][0], COORDS[picNum][1], DIAGPOINTS),\
                        (COORDS[picNum][2], COORDS[picNum][3], DIAGPOINTS),\
                        linewidth=None,\
