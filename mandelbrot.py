@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from numpy import ndarray, array, log, exp, frombuffer
-from os import environ
+from os import environ, path, makedirs
 from time import time
 from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended. 
 from multiprocessing import Process, Semaphore, Queue, freeze_support
@@ -240,8 +240,12 @@ def main ():
         total = t1-t0
         print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
+        
+        newpath = r'pictures' 
+        if not path.exists(newpath):
+            makedirs(newpath)
 
-        fig.savefig(f'mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) 
+        fig.savefig(f'pictures/mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) 
         t2 = time()                
         # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
         total = t2-t1
