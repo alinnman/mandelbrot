@@ -124,8 +124,6 @@ def growth (c, colorFactor, nrOfIterations, offset):
         print("!", end='', flush=True)
     return 0
 
-    
-
 # Some test areas used.
           
 COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
@@ -212,7 +210,7 @@ def main ():
     global colorFactor
     global nrOfIterations
     global offset
-    for picNum in [8]: #range(len(COORDS)):  # Change this loop for picking different pictures
+    for picNum in range(len(COORDS)):  # Change this loop for picking different pictures
 
         resetColorMap ()
         fig = plt.figure(figsize=(FIGSIZE,FIGSIZE),dpi=DPI) 
