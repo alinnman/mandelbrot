@@ -6,14 +6,15 @@ try:
     # Lazy from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended. 
     from multiprocessing import Process, Semaphore, Queue, freeze_support
     # Lazy import itertools
+    # Lazy from gc import collect
     from pickle import loads as ploads, dumps as pdumps
 except BaseException as be: 
     print ("Interrupted while loading packages")
     raise be
 
-DPI = 400
+DPI = 600
 POWER = 2
-DIAGPOINTS=2000
+DIAGPOINTS=4000
 FIGSIZE=20
 ITERATIONS=1000
 DEBUG=False
@@ -151,6 +152,7 @@ def F_threaded (x, sema, queue1, cf, ni, offset):
     try:
         retval = array([growth(ci, cf, ni, offset) for ci in x])
         rp = pdumps (retval)
+        del retval
         if DEBUG:
             print ("BEFORE SENDING")
         queue1.put (rp)
@@ -204,19 +206,21 @@ def F (x):
                     print ("Main    : before joining process ", str(index))
                 returnedData = queues [index].get()
                 returnedObject = ploads (returnedData)
+                del returnedData
                 results2.append (returnedObject)
+                del returnedObject
                 process.join()
                 if DEBUG:
                     print ("Main    : process ", str(index), "done")
 
             retval = array(list(chain.from_iterable(results2)))
+            del results2
             if DEBUG:
                 print ("Data returned")
             return retval
         except BaseException as be:
             print ("Worker process interrupted") # TODO Remove
             raise be
-        
 
 totalTotal = 0
 
@@ -225,15 +229,16 @@ def main ():
     global colorFactor
     global nrOfIterations
     global offset
-    
+
     from matplotlib import pyplot as plt
     from cplot import plot as complex_plot
     from time import time
-    
+    from gc import collect
+
     for picNum in range(len(COORDS)):  # Change this loop for picking different pictures
 
         resetColorMap ()
-        fig = plt.figure(figsize=(FIGSIZE,FIGSIZE),dpi=DPI) 
+        fig = plt.figure(figsize=(FIGSIZE,FIGSIZE),dpi=DPI)
         t0 = time()
 
         nrOfIterations = ITERATIONS
@@ -241,7 +246,7 @@ def main ():
             nrOfIterations = COORDS[picNum][6]
         except:
             pass
-            
+
         offset = 0
         try:
             offset = COORDS[picNum][7]
@@ -259,19 +264,22 @@ def main ():
         total = t1-t0
         print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
-        
-        newpath = r'pictures' 
+
+        newpath = r'pictures'
         if not path.exists(newpath):
             makedirs(newpath)
 
         fig.savefig(f'pictures/mandelbrot_{DIAGPOINTS:04d}.{picNum:06d}.png', dpi=DPI) 
-        t2 = time()                
+        t2 = time()
         # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
         total = t2-t1
         print ("Picture generated and saved. Time taken = " + str(round(total,2)))
- 
+
         totalTotal += total
+        fig.clf ()
         plt.close ()
+        collect ()
+
     print ("READY. Total execution time = " + str(round(totalTotal,2)))
 
 if __name__ == '__main__':
