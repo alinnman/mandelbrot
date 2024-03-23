@@ -8,6 +8,7 @@ try:
     # Lazy import itertools
     # Lazy from gc import collect
     from pickle import loads as ploads, dumps as pdumps
+    # Lazy from picdata import COORDS
 except BaseException as be: 
     print ("Interrupted while loading packages")
     raise be
@@ -129,18 +130,6 @@ def growth (c, colorFactor, nrOfIterations, offset):
         print("!", end='', flush=True)
     return 0
 
-# Some test areas used.
-          
-COORDS = [[-2.2, 0.8,-1.3, 1.3, 2, 0],\
-          [-0.4, 0.2, 0.5, 1.2, 2, 0],\
-          [-0.2, -0.1, 1, 1.1, 2, 0],\
-          [-0.184, -0.16, 1.06, 1.08, 2, 0],\
-          [-0.176, -0.1725, 1.07, 1.073, 2, 0],\
-          [-0.5625, -0.5476, -0.6300, -0.6165, 2.5, 0],\
-          [-0.74453892-1e-4,-0.74453892+1e-4,0.12172418-1e-4,0.12172418+1e-4, 5, 1, 2000],\
-          [-0.5603,-0.5600,-0.6201, -0.6198,3,0],\
-          [-0.7807937278339523-1e-6, -0.7807937278339523+1e-6, -0.14686092684496543-1e-6, -0.14686092684496543+1e-6, 5, 0, 2000, 150]]          
-
 colorFactor = 0
 
 def divide_chunks(l, n):
@@ -234,6 +223,7 @@ def main ():
     from cplot import plot as complex_plot
     from time import time
     from gc import collect
+    from picdata import COORDS
 
     for picNum in range(len(COORDS)):  # Change this loop for picking different pictures
 
