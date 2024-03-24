@@ -2,20 +2,21 @@ try:
     # Lazy from matplotlib import pyplot as plt
     from numpy import ndarray, array, log, exp, frombuffer
     from os import environ, path, makedirs, _exit
-    # Lazy from time import time
-    # Lazy from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended. 
     from multiprocessing import Process, Semaphore, Queue, freeze_support
-    # Lazy import itertools
-    # Lazy from gc import collect
     from pickle import loads as ploads, dumps as pdumps
-    # Lazy from picdata import COORDS
+    
+    # LAZY imports
+    # from picdata import COORDS
+    # from time import time
+    # from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended.     
+    # import itertools
+    # from gc import collect    
 except BaseException as be: 
     print ("Interrupted while loading packages")
     raise be
 
-DPI = 600
-POWER = 2
-DIAGPOINTS=4000
+DPI=600
+DIAGPOINTS=6000
 FIGSIZE=20
 ITERATIONS=1000
 DEBUG=False
@@ -33,7 +34,7 @@ COLORSTEEPNESS = 3
 COLORDAMPENING = 1
 
 if PARALELL:
-    N_THREADS = 2
+    N_THREADS = MAXRUNNINGPROCESSES
     environ['OMP_NUM_THREADS'] = str(N_THREADS)
     environ['OPENBLAS_NUM_THREADS'] = str(N_THREADS)
     environ['MKL_NUM_THREADS'] = str(N_THREADS)
@@ -45,13 +46,7 @@ else:
 growthCounter = 0
 
 def iter (x, c):
-    global POWER
-    if POWER == 2:
-        # Using multiplication is a lot faster than **
-        result = x*x + c
-    else:
-        result = x**POWER + c
-    return result
+    return x*x + c
 
 # The color map is used for caching color codes assigned
 colorCodeMap = {}
@@ -171,7 +166,7 @@ def F (x):
             from itertools import chain
         
             # When threaded then split up the work in several worker threads (processes)
-            sema = Semaphore(MAXRUNNINGPROCESSES)
+            sema = Semaphore(N_THREADS)
             divided = list(divide_chunks(x, CHUNKLENGTH))
             divLength = len(divided)
             processes = list()
