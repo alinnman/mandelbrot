@@ -1,11 +1,11 @@
 try:
-    # Lazy from matplotlib import pyplot as plt
     from numpy import ndarray, array, log, exp, frombuffer
     from os import environ, path, makedirs, _exit
     from multiprocessing import Process, Semaphore, Queue, freeze_support
     from pickle import loads as ploads, dumps as pdumps
     
     # LAZY imports
+    # from matplotlib import pyplot as plt    
     # from picdata import COORDS
     # from time import time
     # from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended.     
