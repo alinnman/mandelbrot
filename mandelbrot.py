@@ -76,6 +76,11 @@ def growth (c, colorFactor, nrOfIterations, offset):
     counter, result, absResult, absDiffResult = 0, 0, 1, 1
     # global P.DIVERGENCE_LIMIT
     # global P.CONVERGENCE_LIMIT
+    
+    if abs(c) <= 0.25:
+        # No need to iterate here. It will converge. 
+        reportGrowth ()        
+        return 0
 
     for i in range (0,nrOfIterations):
         counter += 1
@@ -97,7 +102,7 @@ def growth (c, colorFactor, nrOfIterations, offset):
             if P.DEBUG:
                 print("E", end='', flush=True)
             if P.PARTIALESCAPECOUNT:
-                ratio = (log(P.DIVERGENCE_LIMIT) - log(absResult)) / (log(newAbsResult) - log(absResult))
+                ratio = log(P.DIVERGENCE_LIMIT/absResult) / log(newAbsResult/absResult)
                 return colorCode (counter + 0.5 + ratio, False, colorFactor, offset)
             else:
                 return colorCode (counter, True, colorFactor, offset)
