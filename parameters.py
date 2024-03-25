@@ -1,6 +1,6 @@
 # Picture rendering
 DPI=300
-DIAGPOINTS=200
+DIAGPOINTS=1000
 FIGSIZE=20
 
 # Debug
