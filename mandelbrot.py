@@ -1,9 +1,7 @@
 try:
     from numpy import ndarray, array, log, exp, frombuffer
     from os import environ, path, makedirs, _exit
-    from multiprocessing import Process, Semaphore, Queue, freeze_support
     from pickle import loads as ploads, dumps as pdumps
-    
     import parameters as P
     
     # LAZY imports
@@ -13,6 +11,7 @@ try:
     # from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended.     
     # import itertools
     # from gc import collect    
+    # from multiprocessing import Process, Semaphore, Queue, freeze_support    
 except BaseException as be: 
     print ("Interrupted while loading packages")
     raise be
@@ -150,6 +149,7 @@ def F (x):
         try:
         
             from itertools import chain
+            from multiprocessing import Process, Semaphore, Queue
         
             # When threaded then split up the work in several worker threads (processes)
             sema = Semaphore(N_THREADS)
@@ -255,6 +255,7 @@ def main ():
 
 if __name__ == '__main__':
     # This main section needed for running on Windows
+    from multiprocessing import freeze_support
     freeze_support()
     main ()
 
