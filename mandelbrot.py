@@ -192,7 +192,7 @@ def F (x):
 
 totalTotal = 0
 
-def main ():
+def main (args = None):
     global totalTotal
     global colorFactor
     global nrOfIterations
@@ -203,6 +203,12 @@ def main ():
     from time import time
     from gc import collect
     from picdata import COORDS
+    from sys import argv
+    
+    if args == None:
+        args = argv[1:]
+   
+    P.parseArguments (args)
 
     newpath = r'pictures'
     if not path.exists(newpath):
