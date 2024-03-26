@@ -1,18 +1,18 @@
 try:
     from numpy import ndarray, array, log, exp, frombuffer, absolute
     from os import environ, path, makedirs, _exit
-    from pickle import loads as ploads, dumps as pdumps
     import parameters as P
-    
+
     # LAZY imports
-    # from matplotlib import pyplot as plt    
+    # from matplotlib import pyplot as plt
     # from picdata import COORDS
     # from time import time
     # from cplot import plot as complex_plot # NOTE: The cplot fork in my repositry https://github.com/alinnman/cplot2.git is recommended.     
     # import itertools
-    # from gc import collect    
-    # from multiprocessing import Process, Semaphore, Queue, freeze_support    
-except BaseException as be: 
+    # from gc import collect
+    # from multiprocessing import Process, Semaphore, Queue, freeze_support
+    # from pickle import loads as ploads, dumps as pdumps
+except BaseException as be:
     print ("Interrupted while loading packages")
     raise be
 
@@ -34,10 +34,8 @@ growthCounter = 0
 colorCodeMap = {}
 def resetColorMap ():
     colorCodeMap = {}
-    
+
 def colorValue (counter, colorFactor, offset):
-    # global P.COLORSTEEPNESS
-    # global P.COLORDAMPENING
     counter = counter - offset
     if counter < 0.1:
         counter = 0.1
@@ -66,22 +64,19 @@ def reportGrowth ():
     growthCounter += 1
     if growthCounter % 10000 == 0:
         print(".", end='', flush=True)
-        
-def mandelIter (x, c):
-    return x*x + c
 
 def growth (c, colorFactor, nrOfIterations, offset):
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
     result, absResult, absDiffResult = 0, 1, 1
-    
-    #if abs(c) <= 0.25:
-    #    # No need to iterate here. It will converge. 
-    #    reportGrowth ()        
-    #    return 0
-        
+
+    if abs(c) <= 0.25:
+        # No need to iterate here. It will converge.
+        reportGrowth ()
+        return 0
+
     for i in range (0,nrOfIterations):
-        newResult = mandelIter (result, c)
+        newResult = result*result + c
         newAbsDiffResult = abs(newResult - result)
         newAbsResult = abs(newResult)
         if newAbsDiffResult < P.CONVERGENCE_LIMIT:
@@ -109,7 +104,6 @@ def growth (c, colorFactor, nrOfIterations, offset):
     if P.DEBUG:
         print("!", end='', flush=True)
     return 0
- 
 
 colorFactor = 0
 
@@ -120,20 +114,21 @@ def divide_chunks(l, n):
 def F_threaded (x, sema, queue1, cf, ni, offset):
     # Section for filling data used in multithreading
     try:
+        from pickle import dumps as pdumps
         retval = array([growth(ci, cf, ni, offset) for ci in x])
         rp = pdumps (retval)
         del retval
-        if P.DEBUG:
-            print ("BEFORE SENDING")
+        #if P.DEBUG:
+        #    print ("BEFORE SENDING")
         queue1.put (rp)
-        if P.DEBUG:
-            print ("SENDING DONE")
+        #if P.DEBUG:
+        #    print ("SENDING DONE")
     except BaseException as ki:
         queue1.close ()
         raise ki
     finally:
         sema.release ()
-        
+
 
 def F (x):
     # Callback for cplot
@@ -141,7 +136,7 @@ def F (x):
     global nrOfIterations
     global offset
     growthCounter = 0
-    
+
     if N_THREADS == 1:
         # When non-threaded just fill the data.
         retval = array([growth(ci, colorFactor, nrOfIterations, offset) for ci in x])
@@ -150,7 +145,8 @@ def F (x):
         try:
             from itertools import chain
             from multiprocessing import Process, Semaphore, Queue
-        
+            from pickle import loads as ploads
+
             # When threaded then split up the work in several worker threads (processes)
             sema = Semaphore(N_THREADS)
             divided = list(divide_chunks(x, P.CHUNKLENGTH))
@@ -163,7 +159,7 @@ def F (x):
                 if P.DEBUG:
                     print ("Main    : create and start thread ", str(index))
                 queue1 = Queue ()
-                sema.acquire ()          
+                sema.acquire ()
                 x = Process(target=F_threaded, args= (divided[index], sema, queue1, colorFactor, nrOfIterations, offset))
                 processes.append(x)
                 queues.append (queue1)
