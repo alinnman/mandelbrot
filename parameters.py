@@ -19,6 +19,6 @@ MAXRUNNINGPROCESSES = 4
 
 # Detailed color rendering
 PARTIALESCAPECOUNT = True
-## Experimental parameters which need to be adjusted for deep zooms with small gradients
+## Experimental parameters which may need to be adjusted for deep zooms with small gradients
 COLORSTEEPNESS = 3
 COLORDAMPENING = 1

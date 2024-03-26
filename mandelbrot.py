@@ -1,5 +1,5 @@
 try:
-    from numpy import ndarray, array, log, exp, frombuffer
+    from numpy import ndarray, array, log, exp, frombuffer, absolute
     from os import environ, path, makedirs, _exit
     from pickle import loads as ploads, dumps as pdumps
     import parameters as P
@@ -30,9 +30,6 @@ else:
 
 growthCounter = 0
 
-def iter (x, c):
-    return x*x + c
-
 # The color map is used for caching color codes assigned
 colorCodeMap = {}
 def resetColorMap ():
@@ -54,7 +51,7 @@ def colorCode (counter, useCache, colorFactor, offset):
             # See if a cached result is available
             retVal = colorCodeMap [counter]
             return retVal
-        except:
+        except KeyError:
             # No color code found in cache. Compute a new one. 
             retVal = colorValue (counter, colorFactor, offset)
             # Cache the result
@@ -69,27 +66,25 @@ def reportGrowth ():
     growthCounter += 1
     if growthCounter % 10000 == 0:
         print(".", end='', flush=True)
+        
+def mandelIter (x, c):
+    return x*x + c
 
 def growth (c, colorFactor, nrOfIterations, offset):
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
-    counter, result, absResult, absDiffResult = 0, 0, 1, 1
-    # global P.DIVERGENCE_LIMIT
-    # global P.CONVERGENCE_LIMIT
+    result, absResult, absDiffResult = 0, 1, 1
     
-    if abs(c) <= 0.25:
-        # No need to iterate here. It will converge. 
-        reportGrowth ()        
-        return 0
-
+    #if abs(c) <= 0.25:
+    #    # No need to iterate here. It will converge. 
+    #    reportGrowth ()        
+    #    return 0
+        
     for i in range (0,nrOfIterations):
-        counter += 1
-        newResult = iter (result, c)
-        diffResult = newResult - result
-        newAbsDiffResult = abs(diffResult)
+        newResult = mandelIter (result, c)
+        newAbsDiffResult = abs(newResult - result)
         newAbsResult = abs(newResult)
-
-        if (newAbsDiffResult < P.CONVERGENCE_LIMIT):
+        if newAbsDiffResult < P.CONVERGENCE_LIMIT:
             # Convergence found
             reportGrowth ()
             if P.DEBUG:
@@ -103,9 +98,9 @@ def growth (c, colorFactor, nrOfIterations, offset):
                 print("E", end='', flush=True)
             if P.PARTIALESCAPECOUNT:
                 ratio = log(P.DIVERGENCE_LIMIT/absResult) / log(newAbsResult/absResult)
-                return colorCode (counter + 0.5 + ratio, False, colorFactor, offset)
+                return colorCode (i + 1.5 + ratio, False, colorFactor, offset)
             else:
-                return colorCode (counter, True, colorFactor, offset)
+                return colorCode (i + 1, True, colorFactor, offset)
         result = newResult
         absDiffResult = newAbsDiffResult
         absResult = newAbsResult
@@ -114,6 +109,7 @@ def growth (c, colorFactor, nrOfIterations, offset):
     if P.DEBUG:
         print("!", end='', flush=True)
     return 0
+ 
 
 colorFactor = 0
 
@@ -152,7 +148,6 @@ def F (x):
         return retval
     else:
         try:
-        
             from itertools import chain
             from multiprocessing import Process, Semaphore, Queue
         
@@ -189,12 +184,14 @@ def F (x):
                     print ("Main    : process ", str(index), "done")
 
             retval = array(list(chain.from_iterable(results2)))
+            del queues
+            del processes
+            del divided
             del results2
             if P.DEBUG:
                 print ("Data returned")
             return retval
         except BaseException as be:
-            print ("Worker process interrupted") # TODO Remove
             raise be
 
 totalTotal = 0
@@ -210,6 +207,10 @@ def main ():
     from time import time
     from gc import collect
     from picdata import COORDS
+
+    newpath = r'pictures'
+    if not path.exists(newpath):
+        makedirs(newpath)
 
     for picNum in range(len(COORDS)):  # Change this loop for picking different pictures
 
@@ -240,10 +241,6 @@ def main ():
         total = t1-t0
         print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
-
-        newpath = r'pictures'
-        if not path.exists(newpath):
-            makedirs(newpath)
 
         fig.savefig(f'pictures/mandelbrot_{P.DIAGPOINTS:04d}.{picNum:06d}.png', dpi=P.DPI) 
         t2 = time()
