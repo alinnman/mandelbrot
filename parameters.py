@@ -30,7 +30,7 @@ COORDFILE = "picdata.py"
 def parseArguments (args): 
     global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, COORDFILE
     parser = argparse.ArgumentParser(prog = "mandelbrot", description='Mandelbrot plotter',\
-                                     epilog='This is a simple demo of plotting the Manderbrot fractal')
+                                     epilog='This is a simple demo of plotting the Mandelbrot fractal')
 
     parser.add_argument("-dpi", "--dots_per_inch_resolution",\
     help="Resolution of output file (in DPI). Default="+str(DPI), \
