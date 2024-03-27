@@ -250,7 +250,7 @@ def main (args = None):
         print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
 
-        fig.savefig(f'pictures/mandelbrot_{P.DIAGPOINTS:04d}.{picNum:06d}.png', dpi=P.DPI) 
+        fig.savefig(f'pictures/mandelbrot_{P.COORDFILE}.{P.DIAGPOINTS:04d}.{picNum:06d}.png', dpi=P.DPI) 
         t2 = time()
         # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
         total = t2-t1
