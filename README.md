@@ -9,4 +9,6 @@ This command will produce a beautiful rendering of a spiral structure
 
     python mandelbrot.py -cd picdata.spiral.py -dp 1000 -dpi 400 -cs 4
 
-[<img alt="alt_text" width="200px" src="mandelbrot_illustration.png" />](https://www.google.com/)
+This will result in a picture like this:     
+
+[<img alt="alt_text" width="1000px" src="mandelbrot_illustration.png" />](https://www.google.com/)
