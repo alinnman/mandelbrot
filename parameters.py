@@ -28,7 +28,7 @@ COLORDAMPENING = 1
 COORDFILE = "picdata.py"
 
 def parseArguments (args): 
-    global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, COORDFILE
+    global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, COORDFILE, COLORSTEEPNESS
     parser = argparse.ArgumentParser(prog = "mandelbrot", description='Mandelbrot plotter',\
                                      epilog='This is a simple demo of plotting the Mandelbrot fractal')
 
@@ -49,7 +49,10 @@ def parseArguments (args):
                         action="store", default=int(MAXRUNNINGPROCESSES))                 
     parser.add_argument("-cd", "--coordinate_file",\
     help="File with used coordinates for pictures. Default="+COORDFILE, \
-                        action="store", default=COORDFILE)                                    
+                        action="store", default=COORDFILE)     
+    parser.add_argument("-cs", "--color_steepness",\
+    help="Steepness in colors (contrast). Default="+str(COLORSTEEPNESS), \
+                        action="store", default=COLORSTEEPNESS)                                 
                                       
     argsParsed = parser.parse_args(args)
     
@@ -61,5 +64,7 @@ def parseArguments (args):
     CHUNKLENGTH         = int (va ['chunk_length'             ]) 
     MAXRUNNINGPROCESSES = int (va ['max_running_processes'    ])     
     COORDFILE           =      va ['coordinate_file'          ]
+    COLORSTEEPNESS      = int (va ['color_steepness'          ])
+    
     
     

@@ -36,13 +36,13 @@ colorCodeMap = {}
 def resetColorMap ():
     colorCodeMap = {}
 
-def colorValue (counter, colorFactor, offset):
+def colorValue (counter, colorFactor, offset, cs):
     counter = counter - offset
-    if counter < 0.1:
-        counter = 0.1
-    return ((log(counter)**(P.COLORSTEEPNESS))/10)*1j*exp(-1j*counter*colorFactor)/P.COLORDAMPENING   
+    if counter < 1:
+        counter = 1
+    return ((log(counter)**cs)/10)*1j*exp(-1j*counter*colorFactor)/P.COLORDAMPENING   
 
-def colorCode (counter, useCache, colorFactor, offset):
+def colorCode (counter, useCache, colorFactor, offset, cs):
     # global P.COLORSTEEPNESS
     retVal = 0
     if useCache:
@@ -52,12 +52,12 @@ def colorCode (counter, useCache, colorFactor, offset):
             return retVal
         except KeyError:
             # No color code found in cache. Compute a new one. 
-            retVal = colorValue (counter, colorFactor, offset)
+            retVal = colorValue (counter, colorFactor, offset, cs)
             # Cache the result
             colorCodeMap [counter] = retVal
             return retVal
     else:
-        return colorValue (counter, colorFactor, offset)
+        return colorValue (counter, colorFactor, offset, cs)
 
 def reportGrowth ():
     # Show progress
@@ -66,7 +66,7 @@ def reportGrowth ():
     if growthCounter % 10000 == 0:
         print(".", end='', flush=True)
 
-def growth (c, colorFactor, nrOfIterations, offset):
+def growth (c, colorFactor, nrOfIterations, offset, cs):
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
     result, absResult, absDiffResult = 0, 1, 1
@@ -94,9 +94,9 @@ def growth (c, colorFactor, nrOfIterations, offset):
                 print("E", end='', flush=True)
             if P.PARTIALESCAPECOUNT:
                 ratio = log(P.DIVERGENCE_LIMIT/absResult) / log(newAbsResult/absResult)
-                return colorCode (i + 1.5 + ratio, False, colorFactor, offset)
+                return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs)
             else:
-                return colorCode (i + 1, True, colorFactor, offset)
+                return colorCode (i + 1, True, colorFactor, offset, cs)
         result = newResult
         absDiffResult = newAbsDiffResult
         absResult = newAbsResult
@@ -112,11 +112,11 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def F_threaded (x, sema, queue1, cf, ni, offset):
+def F_threaded (x, sema, queue1, cf, ni, offset, cs):
     # Section for filling data used in multithreading
     try:
         from pickle import dumps as pdumps
-        retval = array([growth(ci, cf, ni, offset) for ci in x])
+        retval = array([growth(ci, cf, ni, offset, cs) for ci in x])
         rp = pdumps (retval)
         del retval
         #if P.DEBUG:
@@ -140,7 +140,7 @@ def F (x):
 
     if N_THREADS == 1:
         # When non-threaded just fill the data.
-        retval = array([growth(ci, colorFactor, nrOfIterations, offset) for ci in x])
+        retval = array([growth(ci, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS) for ci in x])
         return retval
     else:
         try:
@@ -161,7 +161,7 @@ def F (x):
                     print ("Main    : create and start thread ", str(index))
                 queue1 = Queue ()
                 sema.acquire ()
-                x = Process(target=F_threaded, args= (divided[index], sema, queue1, colorFactor, nrOfIterations, offset))
+                x = Process(target=F_threaded, args= (divided[index], sema, queue1, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
