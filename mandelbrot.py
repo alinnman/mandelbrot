@@ -12,6 +12,7 @@ try:
     # from gc import collect
     # from multiprocessing import Process, Semaphore, Queue, freeze_support
     # from pickle import loads as ploads, dumps as pdumps
+    # from importlib import util as importUtil
 except BaseException as be:
     print ("Interrupted while loading packages")
     raise be
@@ -202,19 +203,24 @@ def main (args = None):
     from cplot import plot as complex_plot
     from time import time
     from gc import collect
-    from picdata import COORDS
     from sys import argv
+    from importlib import util as importUtil
     
     if args == None:
         args = argv[1:]
    
     P.parseArguments (args)
+    
+    # Picture coordinates are imported dynamically 
+    spec = importUtil.spec_from_file_location("picdata", P.COORDFILE)
+    picdata = importUtil.module_from_spec(spec)
+    spec.loader.exec_module(picdata)
 
     newpath = r'pictures'
     if not path.exists(newpath):
         makedirs(newpath)
 
-    for picNum in range(len(COORDS)):  # Change this loop for picking different pictures
+    for picNum in range(len(picdata.COORDS)):  # Change this loop for picking different pictures
 
         resetColorMap ()
         fig = plt.figure(figsize=(P.FIGSIZE,P.FIGSIZE),dpi=P.DPI)
@@ -222,22 +228,22 @@ def main (args = None):
 
         nrOfIterations = P.ITERATIONS
         try:
-            nrOfIterations = COORDS[picNum][6]
+            nrOfIterations = picdata.COORDS[picNum][6]
         except:
             pass
 
         offset = 0
         try:
-            offset = COORDS[picNum][7]
+            offset = picdata.COORDS[picNum][7]
         except:
             pass
 
-        colorFactor = COORDS[picNum][5]
-        complex_plot(F,(COORDS[picNum][0], COORDS[picNum][1], P.DIAGPOINTS),\
-                       (COORDS[picNum][2], COORDS[picNum][3], P.DIAGPOINTS),\
+        colorFactor = picdata.COORDS[picNum][5]
+        complex_plot(F,(picdata.COORDS[picNum][0], picdata.COORDS[picNum][1], P.DIAGPOINTS),\
+                       (picdata.COORDS[picNum][2], picdata.COORDS[picNum][3], P.DIAGPOINTS),\
                        linewidth=None,\
                        contours_abs=None, contours_arg=None,\
-                       abs_scaling=COORDS[picNum][4],\
+                       abs_scaling=picdata.COORDS[picNum][4],\
                        add_colorbars=False, add_axes_labels=False)
         t1 = time()
         total = t1-t0
