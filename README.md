@@ -10,19 +10,19 @@ This command will produce a picture of the (entire) fractal
     python mandelbrot.py -cd picdata.py -dp 1000 -dpi 400 -cs 4 -sel 0
 
 This will result in a picture like this:     
-<img alt="alt_text" width="1000px" src="mandelbrot.png" />
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot.png" />
 
 This command will produce a beautiful rendering of a spiral structure
 
     python mandelbrot.py -cd picdata.spiral.py -dp 1000 -dpi 400 -cs 4
 
 This will result in a picture like this:     
-<img alt="alt_text" width="1000px" src="mandelbrot_spiral.png" />
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_spiral.png" />
 
 This command will produce a structure with irregular branches
 
     python mandelbrot.py -cd picdata.branches.py -dp 1000 -dpi 400 -cs 4
 
 This will result in a picture like this:     
-<img alt="alt_text" width="1000px" src="mandelbrot_branches.png" />
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_branches.png" />
 
