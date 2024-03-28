@@ -1,4 +1,6 @@
 # mandelbrot
+
+For installation instructions see <a href="INSTALL.md">INSTALL.md</a>
  
 This project is just an exercise in fractal geometry using the well-known Mandelbrot fractal (see https://en.m.wikipedia.org/wiki/Mandelbrot_set) in combination with a refresh of my Python programming skills. 
 
