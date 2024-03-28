@@ -13,4 +13,6 @@ Parameters are shown using help switch
 
     python mandelbrot.py -h
 
+For examples see the <a href="README.md">README file</a>
+
 
