@@ -11,3 +11,11 @@ This command will produce a beautiful rendering of a spiral structure
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="mandelbrot_spiral.png" />
+
+This command will produce a structure with irregular branches
+
+    python mandelbrot.py -cd picdata.branches.py -dp 1000 -dpi 400 -cs 4
+
+This will result in a picture like this:     
+<img alt="alt_text" width="1000px" src="mandelbrot_branches.png" />
+
