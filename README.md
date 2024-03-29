@@ -35,5 +35,5 @@ This command will produce a structure with a "seahorse" pattern
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_seahorse.png" />
 
-
+Note the little black pattern in the middle which is a "minibrot" and technically part of the Mandelbrot Set. If the Mandelbrot Local Connectivity conjecture (<a href="https://mathoverflow.net/questions/95701/the-deep-significance-of-the-question-of-the-mandelbrot-sets-local-connectednes">MLC</a>) holds then it is connected to the main area through an infinitely thin, extremely long, and complex "black communication line" hidden in the web of "seahorse" patterns. Hard to believe when looking at it. 
 
