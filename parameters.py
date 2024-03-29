@@ -25,10 +25,13 @@ PARTIALESCAPECOUNT = True
 COLORSTEEPNESS = 3
 COLORDAMPENING = 1
 
+# Picture selection
 COORDFILE = "picdata.py"
+SELECTOR = -1
 
 def parseArguments (args): 
-    global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, COORDFILE, COLORSTEEPNESS
+    global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, COORDFILE, COLORSTEEPNESS, SELECTOR
+    
     parser = argparse.ArgumentParser(prog = "mandelbrot", description='Mandelbrot plotter',\
                                      epilog='This is a simple demo of plotting the Mandelbrot fractal')
 
@@ -52,7 +55,10 @@ def parseArguments (args):
                         action="store", default=COORDFILE)     
     parser.add_argument("-cs", "--color_steepness",\
     help="Steepness in colors (contrast). Default="+str(COLORSTEEPNESS), \
-                        action="store", default=COLORSTEEPNESS)                                 
+                        action="store", default=COLORSTEEPNESS)      
+    parser.add_argument("-sel", "--picture_selector",\
+    help="Selection of a single image in a picture set. Default="+str(SELECTOR)+" (select all pictures)", \
+                        action="store", default=SELECTOR)                                     
                                       
     argsParsed = parser.parse_args(args)
     
@@ -63,8 +69,9 @@ def parseArguments (args):
     ITERATIONS          = int (va ['iterations'               ])
     CHUNKLENGTH         = int (va ['chunk_length'             ]) 
     MAXRUNNINGPROCESSES = int (va ['max_running_processes'    ])     
-    COORDFILE           =      va ['coordinate_file'          ]
+    COORDFILE           =      va ['coordinate_file'           ]
     COLORSTEEPNESS      = int (va ['color_steepness'          ])
+    SELECTOR            = int (va ['picture_selector'         ])
     
     
     
