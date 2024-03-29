@@ -28,3 +28,12 @@ This command will produce a structure with irregular branches
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_branches.png" />
 
+This command will produce a structure with a "seahorse" pattern
+
+    python mandelbrot.py -cd picdata.py -dp 2000 -dpi 600 -cs 4 -sel 6
+
+This will result in a picture like this:     
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_seahorse.png" />
+
+
+
