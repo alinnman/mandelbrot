@@ -1,6 +1,6 @@
 ## cplot==0.9.3. Replace with forked version. See INSTALL.md
 matplotlib==3.4.3
-numpy==1.20.3
+numpy>=1.22
 
 
 
