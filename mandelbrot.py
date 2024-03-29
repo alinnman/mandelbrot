@@ -220,7 +220,12 @@ def main (args = None):
     if not path.exists(newpath):
         makedirs(newpath)
 
-    for picNum in range(len(picdata.COORDS)):  # Change this loop for picking different pictures
+    nrOfPics = len (picdata.COORDS)
+    if P.SELECTOR == -1:
+        selector = range (nrOfPics)
+    else:
+        selector = range (P.SELECTOR, P.SELECTOR+1)
+    for picNum in selector:   
 
         resetColorMap ()
         fig = plt.figure(figsize=(P.FIGSIZE,P.FIGSIZE),dpi=P.DPI)
@@ -250,11 +255,12 @@ def main (args = None):
         print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
 
-        fig.savefig(f'pictures/mandelbrot_{P.COORDFILE}.{P.DIAGPOINTS:04d}.{picNum:06d}.png', dpi=P.DPI) 
+        savePath = f'pictures/mandelbrot_{P.COORDFILE}.{P.DIAGPOINTS:04d}.{picNum:06d}.png'
+        fig.savefig(savePath, dpi=P.DPI) 
         t2 = time()
         # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
         total = t2-t1
-        print ("Picture generated and saved. Time taken = " + str(round(total,2)))
+        print ("Picture generated and saved to <"+savePath+">. Time taken = " + str(round(total,2)))
 
         totalTotal += total
         fig.clf ()
