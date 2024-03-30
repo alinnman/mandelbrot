@@ -36,7 +36,7 @@ This will result in a picture like this:
 
 <hr/>
 
-This command will produce a structure with a tree structure and a "minibrot" blog
+This command will produce a structure with a tree structure and a "minibrot" blob
 
     python mandelbrot.py -cd picdata.py -dp 1000 -dpi 400 -cs 4 -sel 5
 
