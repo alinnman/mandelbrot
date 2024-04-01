@@ -63,8 +63,8 @@ def reportGrowth ():
     growthCounter += 1
     if growthCounter % 10000 == 0:
         print(".", end='', flush=True)
-
-def growth (c, colorFactor, nrOfIterations, offset, cs):
+ 
+def growth (c, colorFactor, nrOfIterations, offset, cs) -> int :
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
     result, absResult, absDiffResult = 0, 1, 1
@@ -102,7 +102,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs):
     reportGrowth ()
     if P.DEBUG:
         print("!", end='', flush=True)
-    return 0
+    return 0    
 
 colorFactor = 0
 
