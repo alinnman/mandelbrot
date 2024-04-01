@@ -17,8 +17,6 @@ except BaseException as be:
     print ("Interrupted while loading packages")
     raise be
 
-
-
 if P.PARALELL:
     N_THREADS = P.MAXRUNNINGPROCESSES
     environ['OMP_NUM_THREADS'] = str(N_THREADS)
@@ -77,9 +75,9 @@ def growth (c, colorFactor, nrOfIterations, offset, cs):
         return 0
 
     for i in range (0,nrOfIterations):
-        newResult = result*result + c
+        newResult        = result*result + c
         newAbsDiffResult = abs(newResult - result)
-        newAbsResult = abs(newResult)
+        newAbsResult     = abs(newResult)
         if newAbsDiffResult < P.CONVERGENCE_LIMIT:
             # Convergence found
             reportGrowth ()
@@ -99,7 +97,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs):
                 return colorCode (i + 1, True, colorFactor, offset, cs)
         result = newResult
         absDiffResult = newAbsDiffResult
-        absResult = newAbsResult
+        absResult     = newAbsResult
     # Search exhausted. Assume looping.
     reportGrowth ()
     if P.DEBUG:
@@ -119,11 +117,7 @@ def F_threaded (x, sema, queue1, cf, ni, offset, cs):
         retval = array([growth(ci, cf, ni, offset, cs) for ci in x])
         rp = pdumps (retval)
         del retval
-        #if P.DEBUG:
-        #    print ("BEFORE SENDING")
         queue1.put (rp)
-        #if P.DEBUG:
-        #    print ("SENDING DONE")
     except BaseException as ki:
         queue1.close ()
         raise ki
@@ -161,7 +155,9 @@ def F (x):
                     print ("Main    : create and start thread ", str(index))
                 queue1 = Queue ()
                 sema.acquire ()
-                x = Process(target=F_threaded, args= (divided[index], sema, queue1, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS))
+                x = Process(target=F_threaded, \
+                            args= (divided[index], sema, queue1, colorFactor, \
+                                   nrOfIterations, offset, P.COLORSTEEPNESS))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
@@ -205,6 +201,7 @@ def main (args = None):
     from gc import collect
     from sys import argv
     from importlib import util as importUtil
+    import picindices as PI
     
     if args == None:
         args = argv[1:]
@@ -233,29 +230,33 @@ def main (args = None):
 
         nrOfIterations = P.ITERATIONS
         try:
-            nrOfIterations = picdata.COORDS[picNum][6]
+            nrOfIterations = picdata.COORDS[picNum][PI.NROFITERATIONS]
+            if nrOfIterations == -1:
+                nrOfIterations = P.ITERATIONS
         except:
             pass
 
         offset = 0
         try:
-            offset = picdata.COORDS[picNum][7]
+            offset = picdata.COORDS[picNum][PI.COLOR_OFFSET]
         except:
             pass
 
-        colorFactor = picdata.COORDS[picNum][5]
-        complex_plot(F,(picdata.COORDS[picNum][0], picdata.COORDS[picNum][1], P.DIAGPOINTS),\
-                       (picdata.COORDS[picNum][2], picdata.COORDS[picNum][3], P.DIAGPOINTS),\
+        colorFactor = picdata.COORDS[picNum][PI.COLOR_FACTOR]
+        complex_plot(F,(picdata.COORDS[picNum][PI.REAL_LEFT], picdata.COORDS[picNum][PI.REAL_RIGHT], P.DIAGPOINTS),\
+                       (picdata.COORDS[picNum][PI.IMAG_LEFT], picdata.COORDS[picNum][PI.IMAG_RIGHT], P.DIAGPOINTS),\
                        linewidth=None,\
                        contours_abs=None, contours_arg=None,\
-                       abs_scaling=picdata.COORDS[picNum][4],\
+                       abs_scaling=picdata.COORDS[picNum][PI.ABS_SCALING],\
                        add_colorbars=False, add_axes_labels=False)
         t1 = time()
         total = t1-t0
         print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
 
-        savePath = f'pictures/mandelbrot_{P.COORDFILE}.{P.DIAGPOINTS:04d}.{picNum:06d}.png'
+        splittedPath = P.COORDFILE.split("/")
+        usedName = splittedPath [len(splittedPath)-1]
+        savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.png'
         fig.savefig(savePath, dpi=P.DPI) 
         t2 = time()
         # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
