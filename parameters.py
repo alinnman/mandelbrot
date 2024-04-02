@@ -26,7 +26,7 @@ COLORSTEEPNESS = 3
 COLORDAMPENING = 1
 
 # Picture selection
-COORDFILE = "pics/picdata.py"
+COORDFILE = "picdata/picdata.py"
 SELECTOR = -1
 
 def parseArguments (args): 
