@@ -36,25 +36,22 @@ def colorCode (counter, useCache, colorFactor, offset, cs):
     else:
         return colorValue (counter, colorFactor, offset, cs)
 
+
+def printOut (s):
+    sys.stdout.write (".")
+    sys.stdout.flush ()    
+
 def reportGrowth ():
     # Show progress
     global growthCounter
     growthCounter += 1
     if growthCounter % 10000 == 0:
-        sys.stdout.write (".")
-        sys.stdout.flush ()
-        #print (".")
-        #print(".", end='', flush=True)
+        printOut (".")
  
 def growth (c, colorFactor, nrOfIterations, offset, cs) -> int :
-    # print (P.CONVERGENCE_LIMIT) TODO Remove
 	
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
-    #result, absResult, absDiffResult = 0, 1, 1
-    #result = 0.0
-    #absResult = 1.0
-    #absDiffResult = 1.0
     cdef double complex result    = 0.0
     cdef double absResult         = 1.0
     cdef double absDiffResult     = 1.0
@@ -76,16 +73,14 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) -> int :
             # Convergence found
             reportGrowth ()
             if P.DEBUG:
-                #print("S", end='', flush=True)
-                print ("S")
+                printOut ("S")
             # Assign zero = convergence = Black color
             return 0
         elif newAbsResult > P.DIVERGENCE_LIMIT:
             # Divergence found. Find escape count and assign color.
             reportGrowth ()
             if P.DEBUG: 
-                #print("E", end='', flush=True)
-                print ("E")
+                printOut ("E")
             if P.PARTIALESCAPECOUNT:
                 ratio = log(P.DIVERGENCE_LIMIT/absResult) / log(newAbsResult/absResult)
                 return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs)
@@ -97,6 +92,5 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) -> int :
     # Search exhausted. Assume looping.
     reportGrowth ()
     if P.DEBUG:
-        #print("!", end='', flush=True)
-        print ("!")
+        printOut ("!")
     return 0    
