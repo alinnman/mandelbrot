@@ -4,3 +4,9 @@ dist/*
 __pycache__/*
 */__pycache__/*
 *.spec
+*.c
+*.bak
+*/*.bak
+*.html
+*.so
+

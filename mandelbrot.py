@@ -2,6 +2,7 @@ try:
     from numpy import ndarray, array, log, exp, frombuffer, absolute
     from os import environ, path, makedirs, _exit
     import parameters as P
+    from mandeliter import growth
 
     # LAZY imports
     # from matplotlib import pyplot as plt
@@ -27,83 +28,6 @@ if P.PARALELL:
 else:
     N_THREADS = 1
 
-growthCounter = 0
-
-# The color map is used for caching color codes assigned
-colorCodeMap = {}
-def resetColorMap ():
-    colorCodeMap = {}
-
-def colorValue (counter, colorFactor, offset, cs):
-    counter = counter - offset
-    if counter < 1:
-        counter = 1
-    return ((log(counter)**cs)/10)*1j*exp(-1j*counter*colorFactor)/P.COLORDAMPENING   
-
-def colorCode (counter, useCache, colorFactor, offset, cs):
-    # global P.COLORSTEEPNESS
-    retVal = 0
-    if useCache:
-        try:
-            # See if a cached result is available
-            retVal = colorCodeMap [counter]
-            return retVal
-        except KeyError:
-            # No color code found in cache. Compute a new one. 
-            retVal = colorValue (counter, colorFactor, offset, cs)
-            # Cache the result
-            colorCodeMap [counter] = retVal
-            return retVal
-    else:
-        return colorValue (counter, colorFactor, offset, cs)
-
-def reportGrowth ():
-    # Show progress
-    global growthCounter
-    growthCounter += 1
-    if growthCounter % 10000 == 0:
-        print(".", end='', flush=True)
- 
-def growth (c, colorFactor, nrOfIterations, offset, cs) -> int :
-    # This is the iteration used to find convergence, looping or divergence
-    # Escape count can be calculated for divergence
-    result, absResult, absDiffResult = 0, 1, 1
-
-    if abs(c) <= 0.25:
-        # No need to iterate here. It will converge.
-        reportGrowth ()
-        return 0
-
-    for i in range (0,nrOfIterations):
-        newResult        = result*result + c
-        newAbsDiffResult = abs(newResult - result)
-        newAbsResult     = abs(newResult)
-        if newAbsDiffResult < P.CONVERGENCE_LIMIT:
-            # Convergence found
-            reportGrowth ()
-            if P.DEBUG:
-                print("S", end='', flush=True)
-            # Assign zero = convergence = Black color
-            return 0
-        elif newAbsResult > P.DIVERGENCE_LIMIT:
-            # Divergence found. Find escape count and assign color.
-            reportGrowth ()
-            if P.DEBUG:
-                print("E", end='', flush=True)
-            if P.PARTIALESCAPECOUNT:
-                ratio = log(P.DIVERGENCE_LIMIT/absResult) / log(newAbsResult/absResult)
-                return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs)
-            else:
-                return colorCode (i + 1, True, colorFactor, offset, cs)
-        result = newResult
-        absDiffResult = newAbsDiffResult
-        absResult     = newAbsResult
-    # Search exhausted. Assume looping.
-    reportGrowth ()
-    if P.DEBUG:
-        print("!", end='', flush=True)
-    return 0    
-
 colorFactor = 0
 
 def divide_chunks(l, n):
@@ -114,6 +38,7 @@ def F_threaded (x, sema, queue1, cf, ni, offset, cs):
     # Section for filling data used in multithreading
     try:
         from pickle import dumps as pdumps
+        from mandeliter import growth
         retval = array([growth(ci, cf, ni, offset, cs) for ci in x])
         rp = pdumps (retval)
         del retval
@@ -202,6 +127,7 @@ def main (args = None):
     from sys import argv
     from importlib import util as importUtil
     import picindices as PI
+    from mandeliter import resetColorMap
     
     if args == None:
         args = argv[1:]
