@@ -48,7 +48,7 @@ def reportGrowth ():
     if growthCounter % 10000 == 0:
         printOut (".")
  
-def growth (c, colorFactor, nrOfIterations, offset, cs) -> int :
+def growth (c, colorFactor, nrOfIterations, offset, cs) :
 	
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
