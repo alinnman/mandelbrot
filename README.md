@@ -11,7 +11,7 @@ I have made some very minor changes to this package and made a fork. You need my
 
 This command will produce a picture of the (entire) fractal
 
-    python mandelbrot.py -cd pics/picdata.py -dp 1000 -dpi 400 -cs 4 -sel 0
+    python mandelbrot.py -cd picdata/picdata.py -dp 1000 -dpi 400 -cs 4 -sel 0
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot.png" />
@@ -20,7 +20,7 @@ This will result in a picture like this:
 
 This command will produce a beautiful rendering of a spiral structure
 
-    python mandelbrot.py -cd pics/picdata.spiral.py -dp 1000 -dpi 400 -cs 4
+    python mandelbrot.py -cd picdata/picdata.spiral.py -dp 1000 -dpi 400 -cs 4
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_spiral.png" />
@@ -29,7 +29,7 @@ This will result in a picture like this:
 
 This command will produce a structure with irregular branches
 
-    python mandelbrot.py -cd pics/picdata.branches.py -dp 1000 -dpi 400 -cs 4
+    python mandelbrot.py -cd picdata/picdata.branches.py -dp 1000 -dpi 400 -cs 4
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_branches.png" />
@@ -38,7 +38,7 @@ This will result in a picture like this:
 
 This command will produce a structure with a tree structure and a "minibrot" blob
 
-    python mandelbrot.py -cd pics/picdata.py -dp 1000 -dpi 400 -cs 4 -sel 5
+    python mandelbrot.py -cd picdata/picdata.py -dp 1000 -dpi 400 -cs 4 -sel 5
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_tree.png" />
@@ -47,7 +47,7 @@ This will result in a picture like this:
 
 This command will produce a structure with a "seahorse" pattern
 
-    python mandelbrot.py -cd pics/picdata.py -dp 1000 -dpi 600 -cs 4 -sel 6
+    python mandelbrot.py -cd picdata/picdata.py -dp 1000 -dpi 600 -cs 4 -sel 6
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_seahorse.png" />
