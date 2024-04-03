@@ -9,4 +9,6 @@ __pycache__/*
 */*.bak
 *.html
 *.so
+*.pyd
+
 
