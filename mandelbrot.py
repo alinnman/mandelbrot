@@ -52,10 +52,10 @@ def F_threaded (x, sema, queue1, cf, ni, offset, cs):
 
 def F (x):
     # Callback for cplot
-    global growthCounter
+    #global growthCounter
     global nrOfIterations
     global offset
-    growthCounter = 0
+    #growthCounter = 0
 
     if N_THREADS == 1:
         # When non-threaded just fill the data.

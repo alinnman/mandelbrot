@@ -10,5 +10,6 @@ __pycache__/*
 *.html
 *.so
 *.pyd
+*.spec
 
 

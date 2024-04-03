@@ -52,27 +52,27 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
 	
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
+    cdef double complex cc        = c
     cdef double complex result    = 0.0
     cdef double absResult         = 1.0
     cdef double absDiffResult     = 1.0
     cdef double complex newResult = 0.0
     cdef double newAbsDiffResult  = 0.0
     cdef double newAbsResult      = 0.0
-    #cdef int    i                 = 0
     cdef double conv_limit        = P.CONVERGENCE_LIMIT
     cdef double div_limit         = P.DIVERGENCE_LIMIT
+    cdef int    i                 = 0
+    cdef int    nrIt              = nrOfIterations
 
-    if abs(c) <= 0.25:
+    if abs(cc) <= 0.25:
         # No need to iterate here. It will converge.
         reportGrowth ()
         return 0
 
-    for i in range (0,nrOfIterations):
-    #while (i < nrOfIterations):
-        newResult = result*result + c
+    while i < nrIt: 
+        newResult = result*result + cc
         newAbsDiffResult  = abs(newResult - result)
         newAbsResult      = abs(newResult)
-        # print (newAbsResult) # TODO Remove
         if newAbsDiffResult < conv_limit:
             # Convergence found
             reportGrowth ()
@@ -86,14 +86,14 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
             if P.DEBUG: 
                 printOut ("E")
             if P.PARTIALESCAPECOUNT:
-                ratio = log(P.DIVERGENCE_LIMIT/absResult) / log(newAbsResult/absResult)
+                ratio = log(div_limit/absResult) / log(newAbsResult/absResult)
                 return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs)
             else:
                 return colorCode (i + 1, True, colorFactor, offset, cs)
         result = newResult
         absDiffResult = newAbsDiffResult
         absResult     = newAbsResult
-        #i             = i+1
+        i             = i+1
     # Search exhausted. Assume looping.
     reportGrowth ()
     if P.DEBUG:
