@@ -7,6 +7,8 @@ This project is just an exercise in fractal geometry using the well-known Mandel
 To plot the data I use the excellent cplot Python package by Nico Schlömer (https://github.com/nschloe/cplot.git). This package is also available in PyPi. 
 I have made some very minor changes to this package and made a fork. You need my fork (https://github.com/alinnman/cplot2.git) to visualize the data quickly since there are some optimizations (using the original cplot will take a very long time). 
 
+The output of the program will always be put in the subdirectory ``pictures`` and this directory will be created if it does not exist already. 
+
 <hr/>
 
 This command will produce a picture of the (entire) fractal
