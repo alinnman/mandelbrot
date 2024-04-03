@@ -58,6 +58,9 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
     cdef double complex newResult = 0.0
     cdef double newAbsDiffResult  = 0.0
     cdef double newAbsResult      = 0.0
+    #cdef int    i                 = 0
+    cdef double conv_limit        = P.CONVERGENCE_LIMIT
+    cdef double div_limit         = P.DIVERGENCE_LIMIT
 
     if abs(c) <= 0.25:
         # No need to iterate here. It will converge.
@@ -65,18 +68,19 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
         return 0
 
     for i in range (0,nrOfIterations):
+    #while (i < nrOfIterations):
         newResult = result*result + c
         newAbsDiffResult  = abs(newResult - result)
         newAbsResult      = abs(newResult)
         # print (newAbsResult) # TODO Remove
-        if newAbsDiffResult < P.CONVERGENCE_LIMIT:
+        if newAbsDiffResult < conv_limit:
             # Convergence found
             reportGrowth ()
             if P.DEBUG:
                 printOut ("S")
             # Assign zero = convergence = Black color
             return 0
-        elif newAbsResult > P.DIVERGENCE_LIMIT:
+        elif newAbsResult > div_limit:
             # Divergence found. Find escape count and assign color.
             reportGrowth ()
             if P.DEBUG: 
@@ -89,6 +93,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
         result = newResult
         absDiffResult = newAbsDiffResult
         absResult     = newAbsResult
+        #i             = i+1
     # Search exhausted. Assume looping.
     reportGrowth ()
     if P.DEBUG:

@@ -60,7 +60,7 @@ Note the little black pattern in the middle which is a "minibrot" and technicall
 
 This command will produce a structure with a complex "frosty" pattern. It will also be rather demanding to compute this one.
 
-    python mandelbrot.py -cd picdata/picdata.frost.py -dp 2000 -dpi 600 -cs 4 
+    python mandelbrot.py -cd picdata/picdata.frost.py -dp 2000 -dpi 600 -cs 4 -cl 200000
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_frost.png" />
