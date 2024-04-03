@@ -1,4 +1,5 @@
 import argparse
+from multiprocessing import cpu_count
 
 # Picture rendering
 DPI=300
@@ -17,7 +18,7 @@ CONVERGENCE_LIMIT = 1e-6
 PARALELL = True
 #CHUNKLENGTH = 200000
 CHUNKLENGTH = 50000
-MAXRUNNINGPROCESSES = 4
+MAXRUNNINGPROCESSES = max(1, cpu_count()-4) 
 
 # Detailed color rendering
 PARTIALESCAPECOUNT = True
@@ -48,7 +49,7 @@ def parseArguments (args):
     help="Number of pixels handled by each thread instance. Default="+str(CHUNKLENGTH), \
                         action="store", default=int(CHUNKLENGTH))    
     parser.add_argument("-mp", "--max_running_processes",\
-    help="Maximum number of concurrent threads. Default="+str(MAXRUNNINGPROCESSES), \
+    help="Maximum number of concurrent processes. Default="+str(MAXRUNNINGPROCESSES), \
                         action="store", default=int(MAXRUNNINGPROCESSES))                 
     parser.add_argument("-cd", "--coordinate_file",\
     help="File with used coordinates for pictures. Default="+COORDFILE, \
