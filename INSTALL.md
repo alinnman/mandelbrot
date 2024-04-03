@@ -18,7 +18,7 @@ Then just clone or fork this repository and run the main Python file (mandelbrot
 	pip install -r requirements.txt
 
 The program uses a Cython module for computation speed. 
-See attached files ``build.sh`` and ``build.cmd`` which builds the C-code and executable. 
+See attached files ``build.sh`` (Linux) and ``build.cmd`` (Windows) which builds the C-code and executable. 
 
 Parameters are shown using help switch
 
