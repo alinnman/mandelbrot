@@ -12,7 +12,7 @@ You must start by cloning <a href="https://github.com/alinnman/cplot2">my reposi
     cd <directory of the clone you just made>
     pip install . 
 
-Then just clone or fork this repository to a suitable location. Install dependent libraries. 
+Then just clone or fork <a href="https://github.com/alinnman/mandelbrot.git">this repository</a> to a suitable location. Install dependent libraries. 
 
     git clone https://github.com/alinnman/mandelbrot.git
 	pip install -r requirements.txt
