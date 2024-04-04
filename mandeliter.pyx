@@ -13,7 +13,7 @@ def resetColorMap ():
     colorCodeMap = {}
     
 def complex_exp (val : cython.complex) -> cython.complex: 
-    cdef double complex aPart = c_exp (val.real)
+    cdef double         aPart = c_exp (val.real)
     cdef double complex bPart = c_cos (val.imag) + 1j*c_sin (val.imag)
     return aPart * bPart
 
