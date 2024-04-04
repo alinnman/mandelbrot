@@ -42,6 +42,7 @@ def printOut (s):
     sys.stdout.flush ()    
 
 def reportGrowth ():
+    return # TODO REMOVE
     # Show progress
     global growthCounter
     growthCounter += 1
@@ -68,6 +69,8 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
     cdef double div_limit2        = div_limit*div_limit
     cdef int    i                 = 0
     cdef int    nrIt              = nrOfIterations
+    cdef double X1                = 0.0
+    cdef double X2                = 0.0
 
     if abs(cc) <= 0.25:
         # No need to iterate here. It will converge.
@@ -76,11 +79,10 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
 
     while i < nrIt: 
         newResult = result*result + cc
-        #newAbsDiffResult  = abs(newResult - result)
-        newAbsDiffResult = ((newResult.real - result.real)*(newResult.real - result.real)) + ((newResult.imag - result.imag)*(newResult.imag - result.imag))
-        #newAbsResult      = abs(newResult)
+        X1 = newResult.real - result.real
+        X2 = newResult.imag - result.imag
+        newAbsDiffResult = X1*X1 + X2*X2
         newAbsResult = newResult.real*newResult.real + newResult.imag*newResult.imag
-        #if newAbsDiffResult < conv_limit:
         if newAbsDiffResult < conv_limit2:
             # Convergence found
             reportGrowth ()
@@ -88,7 +90,6 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
                 printOut ("S")
             # Assign zero = convergence = Black color
             return 0
-        #elif newAbsResult > div_limit:
         elif newAbsResult > div_limit2:
             # Divergence found. Find escape count and assign color.
             reportGrowth ()
