@@ -1,10 +1,9 @@
 #!python
 #cython: language_level=3
 
-import cython
-import parameters as P
-from numpy import exp, log, sqrt
 import sys
+from libc.math cimport log as c_log, sin as c_sin, cos as c_cos, exp as c_exp
+import cython
 
 growthCounter = 0
 
@@ -12,14 +11,25 @@ growthCounter = 0
 colorCodeMap = {}
 def resetColorMap ():
     colorCodeMap = {}
+    
+def complex_exp (val : cython.complex) -> cython.complex: 
+    cdef double complex aPart = c_exp (val.real)
+    cdef double complex bPart = c_cos (val.imag) + 1j*c_sin (val.imag)
+    return aPart * bPart
 
-def colorValue (counter, colorFactor, offset, cs):
-    counter = counter - offset
-    if counter < 1:
-        counter = 1
-    return ((log(counter)**cs)/10)*1j*exp(-1j*counter*colorFactor)/P.COLORDAMPENING   
+def colorValue (counter, colorFactor, offset, cs, cd):
+    cdef double c_counter = counter
+    cdef double c_colorFactor = colorFactor
+    cdef double c_offset = offset
+    cdef double c_cs = cs
+    cdef double c_cd = cd
+    
+    c_counter = c_counter - c_offset
+    if c_counter < 1:
+        c_counter = 1
+    return ((c_log(c_counter)**c_cs)/10)*1j*complex_exp(-1j*c_counter*c_colorFactor)/c_cd    
 
-def colorCode (counter, useCache, colorFactor, offset, cs):
+def colorCode (counter, useCache, colorFactor, offset, cs, cd):
     # global P.COLORSTEEPNESS
     retVal = 0
     if useCache:
@@ -29,16 +39,16 @@ def colorCode (counter, useCache, colorFactor, offset, cs):
             return retVal
         except KeyError:
             # No color code found in cache. Compute a new one. 
-            retVal = colorValue (counter, colorFactor, offset, cs)
+            retVal = colorValue (counter, colorFactor, offset, cs, cd)
             # Cache the result
             colorCodeMap [counter] = retVal
             return retVal
     else:
-        return colorValue (counter, colorFactor, offset, cs)
+        return colorValue (counter, colorFactor, offset, cs, cd)
 
 
 def printOut (s):
-    sys.stdout.write (".")
+    sys.stdout.write (s)
     sys.stdout.flush ()    
 
 def reportGrowth ():
@@ -48,7 +58,7 @@ def reportGrowth ():
     if growthCounter % 10000 == 0:
         printOut (".")
  
-def growth (c, colorFactor, nrOfIterations, offset, cs) :
+def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
 	
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
@@ -62,9 +72,9 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
     cdef double complex newResult = 0.0
     cdef double newAbsDiffResult  = 0.0
     cdef double newAbsResult      = 0.0
-    cdef double conv_limit        = P.CONVERGENCE_LIMIT
+    cdef double conv_limit        = cl
     cdef double conv_limit2       = conv_limit * conv_limit
-    cdef double div_limit         = P.DIVERGENCE_LIMIT
+    cdef double div_limit         = dl
     cdef double div_limit2        = div_limit*div_limit
     cdef int    i                 = 0
     cdef int    nrIt              = nrOfIterations
@@ -85,26 +95,26 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
         if newAbsDiffResult < conv_limit2:
             # Convergence found
             reportGrowth ()
-            if P.DEBUG:
+            if debug:
                 printOut ("S")
             # Assign zero = convergence = Black color
             return 0
         elif newAbsResult > div_limit2:
             # Divergence found. Find escape count and assign color.
             reportGrowth ()
-            if P.DEBUG: 
+            if debug: 
                 printOut ("E")
-            if P.PARTIALESCAPECOUNT:
-                ratio = log(div_limit/sqrt(absResult)) / log(sqrt(newAbsResult)/sqrt(absResult))
-                return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs)
+            if pe:
+                ratio = c_log(div_limit2/absResult) / c_log(newAbsResult/absResult)
+                return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs, cd)
             else:
-                return colorCode (i + 1, True, colorFactor, offset, cs)
+                return colorCode (i + 1, True, colorFactor, offset, cs, cd)
         result = newResult
         absDiffResult = newAbsDiffResult
         absResult     = newAbsResult
         i             = i+1
     # Search exhausted. Assume looping.
     reportGrowth ()
-    if P.DEBUG:
+    if debug:
         printOut ("!")
     return 0    

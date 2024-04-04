@@ -78,6 +78,7 @@ def parseArguments (args):
     SELECTOR            = int       (va ['picture_selector'         ])
     PARTIALESCAPECOUNT  = bool      (va ['partial_escape_count'     ] != str(False))
 
+
     
     
     

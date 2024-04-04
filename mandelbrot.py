@@ -34,12 +34,12 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def F_threaded (x, sema, queue1, cf, ni, offset, cs):
+def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd):
     # Section for filling data used in multithreading
     try:
         from pickle import dumps as pdumps
         from mandeliter import growth
-        retval = array([growth(ci, cf, ni, offset, cs) for ci in x])
+        retval = array([growth(ci, cf, ni, offset, cs, pe, cl, dl, debug, cd) for ci in x])
         rp = pdumps (retval)
         del retval
         queue1.put (rp)
@@ -59,7 +59,7 @@ def F (x):
 
     if N_THREADS == 1:
         # When non-threaded just fill the data.
-        retval = array([growth(ci, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS) for ci in x])
+        retval = array([growth(ci, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING) for ci in x])
         return retval
     else:
         try:
@@ -82,7 +82,7 @@ def F (x):
                 sema.acquire ()
                 x = Process(target=F_threaded, \
                             args= (divided[index], sema, queue1, colorFactor, \
-                                   nrOfIterations, offset, P.COLORSTEEPNESS))
+                                   nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
