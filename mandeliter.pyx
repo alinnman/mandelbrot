@@ -52,6 +52,9 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
 	
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
+    
+    # The code is optimized using Cython 
+    
     cdef double complex cc        = c
     cdef double complex result    = 0.0
     cdef double absResult         = 1.0
@@ -60,7 +63,9 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
     cdef double newAbsDiffResult  = 0.0
     cdef double newAbsResult      = 0.0
     cdef double conv_limit        = P.CONVERGENCE_LIMIT
+    cdef double conv_limit2       = conv_limit * conv_limit
     cdef double div_limit         = P.DIVERGENCE_LIMIT
+    cdef double div_limit2        = div_limit*div_limit
     cdef int    i                 = 0
     cdef int    nrIt              = nrOfIterations
 
@@ -71,16 +76,20 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
 
     while i < nrIt: 
         newResult = result*result + cc
-        newAbsDiffResult  = abs(newResult - result)
-        newAbsResult      = abs(newResult)
-        if newAbsDiffResult < conv_limit:
+        #newAbsDiffResult  = abs(newResult - result)
+        newAbsDiffResult = ((newResult.real - result.real)*(newResult.real - result.real)) + ((newResult.imag - result.imag)*(newResult.imag - result.imag))
+        #newAbsResult      = abs(newResult)
+        newAbsResult = newResult.real*newResult.real + newResult.imag*newResult.imag
+        #if newAbsDiffResult < conv_limit:
+        if newAbsDiffResult < conv_limit2:
             # Convergence found
             reportGrowth ()
             if P.DEBUG:
                 printOut ("S")
             # Assign zero = convergence = Black color
             return 0
-        elif newAbsResult > div_limit:
+        #elif newAbsResult > div_limit:
+        elif newAbsResult > div_limit2:
             # Divergence found. Find escape count and assign color.
             reportGrowth ()
             if P.DEBUG: 
