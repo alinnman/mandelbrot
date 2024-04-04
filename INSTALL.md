@@ -18,7 +18,7 @@ Then just clone or fork this repository to a suitable location. Install dependen
 	pip install -r requirements.txt
 
 The program uses a Cython module for computation speed. 
-Execute one of the attached scripts ``build.sh`` (Linux) or ``build.cmd`` (Windows) which builds the C-code and executable. 
+Execute one of the attached scripts <a href="build.sh">``build.sh``</a> (Linux) or <a href="build.cmd">``build.cmd``</a> (Windows) which builds the C-code and executable. 
 
 Now you can run the program. Specifying no arguments will just generate a test suite. All generated images will be written to the ``pictures`` subdirectory. 
 
