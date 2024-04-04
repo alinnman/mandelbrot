@@ -3,7 +3,7 @@
 
 import cython
 import parameters as P
-from numpy import exp, log
+from numpy import exp, log, sqrt
 import sys
 
 growthCounter = 0
@@ -95,7 +95,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs) :
             if P.DEBUG: 
                 printOut ("E")
             if P.PARTIALESCAPECOUNT:
-                ratio = log(div_limit/absResult) / log(newAbsResult/absResult)
+                ratio = log(div_limit/sqrt(absResult)) / log(sqrt(newAbsResult)/sqrt(absResult))
                 return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs)
             else:
                 return colorCode (i + 1, True, colorFactor, offset, cs)
