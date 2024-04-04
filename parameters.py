@@ -30,7 +30,8 @@ COORDFILE = "picdata/picdata.py"
 SELECTOR = -1
 
 def parseArguments (args): 
-    global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, COORDFILE, COLORSTEEPNESS, SELECTOR
+    global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, \
+           COORDFILE, COLORSTEEPNESS, SELECTOR, PARTIALESCAPECOUNT
     
     parser = argparse.ArgumentParser(prog = "mandelbrot", description='Mandelbrot plotter',\
                                      epilog='This is a simple demo of plotting the Mandelbrot fractal')
@@ -58,20 +59,25 @@ def parseArguments (args):
                         action="store", default=COLORSTEEPNESS)      
     parser.add_argument("-sel", "--picture_selector",\
     help="Selection of a single image in a picture set. Default="+str(SELECTOR)+" (select all pictures)", \
-                        action="store", default=SELECTOR)                                     
+                        action="store", default=SELECTOR)   
+    parser.add_argument("-pe", "--partial_escape_count",\
+    help="Use partial escape count. Will produce prettier images but costs some CPU time. Default = "+str(PARTIALESCAPECOUNT), \
+                        action="store", default=PARTIALESCAPECOUNT)                              
                                       
     argsParsed = parser.parse_args(args)
     
     va = vars(argsParsed)
 
-    DPI                 = int (va ['dots_per_inch_resolution' ])
-    DIAGPOINTS          = int (va ['diagram_points'           ])
-    ITERATIONS          = int (va ['iterations'               ])
-    CHUNKLENGTH         = int (va ['chunk_length'             ]) 
-    MAXRUNNINGPROCESSES = int (va ['max_running_processes'    ])     
-    COORDFILE           =      va ['coordinate_file'           ]
-    COLORSTEEPNESS      = int (va ['color_steepness'          ])
-    SELECTOR            = int (va ['picture_selector'         ])
+    DPI                 = int       (va ['dots_per_inch_resolution' ])
+    DIAGPOINTS          = int       (va ['diagram_points'           ])
+    ITERATIONS          = int       (va ['iterations'               ])
+    CHUNKLENGTH         = int       (va ['chunk_length'             ]) 
+    MAXRUNNINGPROCESSES = int       (va ['max_running_processes'    ])     
+    COORDFILE           =            va ['coordinate_file'          ]
+    COLORSTEEPNESS      = int       (va ['color_steepness'          ])
+    SELECTOR            = int       (va ['picture_selector'         ])
+    PARTIALESCAPECOUNT  = bool      (va ['partial_escape_count'     ] != str(False))
+
     
     
     
