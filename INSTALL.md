@@ -5,7 +5,7 @@ Requirements
 * Python 3 environment
 * Git for cloning or forking the code
 
-You must start by cloning my repository cplot2. It is a fork of the official PyPi cplot library. 
+You must start by cloning <a href="https://github.com/alinnman/cplot2">my repository cplot2</a>. It is a fork of <a href="https://github.com/nschloe/cplot.git">the official PyPi cplot library</a>. 
 
     git clone https://github.com/alinnman/cplot2.git
     pip uninstall cplot # If you already had cplot installed
