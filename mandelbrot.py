@@ -1,6 +1,6 @@
 try:
-    from numpy import ndarray, array, log, exp, frombuffer, absolute
-    from os import environ, path, makedirs, _exit
+    from numpy import array
+    from os import environ, path, makedirs
     import parameters as P
     from mandeliter import growth
 
@@ -52,14 +52,14 @@ def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd):
 
 def F (x):
     # Callback for cplot
-    #global growthCounter
     global nrOfIterations
     global offset
-    #growthCounter = 0
 
     if N_THREADS == 1:
         # When non-threaded just fill the data.
-        retval = array([growth(ci, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING) for ci in x])
+        retval = array([growth(ci, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS,\
+                               P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT,\
+                               P.DEBUG, P.COLORDAMPENING) for ci in x])
         return retval
     else:
         try:
@@ -84,7 +84,8 @@ def F (x):
                 sema.acquire ()
                 x = Process(target=F_threaded, \
                             args= (divided[index], sema, queue1, colorFactor, \
-                                   nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
+                                   nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT,\
+                                   P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
@@ -187,7 +188,6 @@ def main (args = None):
         savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.png'
         fig.savefig(savePath, dpi=P.DPI) 
         t2 = time()
-        # NOTE: This seems to take a *lot* of memory in some cases. Optimization may be needed in picture generation. 
         total = t2-t1
         print ("Picture generated and saved to <"+savePath+">. Time taken = " + str(round(total,2)))
 

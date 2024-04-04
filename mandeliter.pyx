@@ -5,19 +5,20 @@ import sys
 from libc.math cimport log as c_log, sin as c_sin, cos as c_cos, exp as c_exp
 import cython
 
-growthCounter = 0
+cdef int growthCounter = 0
 
 # The color map is used for caching color codes assigned
-colorCodeMap = {}
+cdef colorCodeMap = {}
 def resetColorMap ():
+    global colorCodeMap
     colorCodeMap = {}
     
-def complex_exp (val : cython.complex) -> cython.complex: 
+cdef double complex complex_exp (val : cython.complex)  : 
     cdef double         aPart = c_exp (val.real)
     cdef double complex bPart = c_cos (val.imag) + 1j*c_sin (val.imag)
     return aPart * bPart
 
-def colorValue (counter, colorFactor, offset, cs, cd):
+cdef double complex colorValue (counter, colorFactor, offset, cs, cd):
     cdef double c_counter = counter
     cdef double c_colorFactor = colorFactor
     cdef double c_offset = offset
@@ -29,8 +30,9 @@ def colorValue (counter, colorFactor, offset, cs, cd):
         c_counter = 1
     return ((c_log(c_counter)**c_cs)/10)*1j*complex_exp(-1j*c_counter*c_colorFactor)/c_cd    
 
-def colorCode (counter, useCache, colorFactor, offset, cs, cd):
+cdef double complex colorCode (counter, useCache, colorFactor, offset, cs, cd):
     # global P.COLORSTEEPNESS
+    global colorCodeMap
     retVal = 0
     if useCache:
         try:
@@ -47,11 +49,11 @@ def colorCode (counter, useCache, colorFactor, offset, cs, cd):
         return colorValue (counter, colorFactor, offset, cs, cd)
 
 
-def printOut (s):
+cdef printOut (s):
     sys.stdout.write (s)
     sys.stdout.flush ()    
 
-def reportGrowth ():
+cdef reportGrowth ():
     # Show progress
     global growthCounter
     growthCounter += 1
@@ -81,10 +83,10 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
     cdef double X1                = 0.0
     cdef double X2                = 0.0
 
-    if abs(cc) <= 0.25:
-        # No need to iterate here. It will converge.
-        reportGrowth ()
-        return 0
+    #if abs(cc) <= 0.25:
+    #    # No need to iterate here. It will converge.
+    #    reportGrowth ()
+    #    return 0
 
     while i < nrIt: 
         newResult = result*result + cc
@@ -117,4 +119,6 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
     reportGrowth ()
     if debug:
         printOut ("!")
-    return 0    
+    return 0
+
+
