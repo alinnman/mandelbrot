@@ -16,7 +16,7 @@ CONVERGENCE_LIMIT = 1e-6
 
 # Process execution
 PARALELL = True
-CHUNKLENGTH = 50000
+#CHUNKLENGTH = 50000
 MAXRUNNINGPROCESSES = max(1, cpu_count()-4) 
 
 # Detailed color rendering
@@ -45,9 +45,11 @@ def parseArguments (args):
     parser.add_argument("-it", "--iterations",\
     help="Max nr of iterations. Default="+str(ITERATIONS), \
                         action="store", default=int(ITERATIONS))     
+    '''
     parser.add_argument("-cl", "--chunk_length",\
     help="Number of pixels handled by each thread instance. Default="+str(CHUNKLENGTH), \
                         action="store", default=int(CHUNKLENGTH))    
+    '''
     parser.add_argument("-mp", "--max_running_processes",\
     help="Maximum number of concurrent processes. Default="+str(MAXRUNNINGPROCESSES), \
                         action="store", default=int(MAXRUNNINGPROCESSES))                 
@@ -71,7 +73,7 @@ def parseArguments (args):
     DPI                 = int       (va ['dots_per_inch_resolution' ])
     DIAGPOINTS          = int       (va ['diagram_points'           ])
     ITERATIONS          = int       (va ['iterations'               ])
-    CHUNKLENGTH         = int       (va ['chunk_length'             ]) 
+    #CHUNKLENGTH         = int       (va ['chunk_length'             ]) 
     MAXRUNNINGPROCESSES = int       (va ['max_running_processes'    ])     
     COORDFILE           =            va ['coordinate_file'          ]
     COLORSTEEPNESS      = int       (va ['color_steepness'          ])

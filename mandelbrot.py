@@ -69,7 +69,9 @@ def F (x):
 
             # When threaded then split up the work in several worker threads (processes)
             sema = Semaphore(N_THREADS)
-            divided = list(divide_chunks(x, P.CHUNKLENGTH))
+            # Calculate reasonable chunk length
+            chunkLength = int(max (len(x) / 8, 50000))
+            divided = list(divide_chunks(x, chunkLength))
             divLength = len(divided)
             processes = list()
             queues = list ()
