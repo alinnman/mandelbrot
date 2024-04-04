@@ -42,7 +42,6 @@ def printOut (s):
     sys.stdout.flush ()    
 
 def reportGrowth ():
-    return # TODO REMOVE
     # Show progress
     global growthCounter
     growthCounter += 1
