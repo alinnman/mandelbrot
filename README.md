@@ -9,6 +9,8 @@ I have made some very minor changes to this package and made a fork. You need my
 
 The output of the program will always be put in the subdirectory ``pictures`` and this directory will be created if it does not exist already. 
 
+A short note on <b>performance</b>: I wrote this just to refresh my Python programming skills, but stumbled on Cython and took the chance to reach at least acceptable performance levels. On a standard desktop PC with an 8-core Intel i7 processor (running Linux), I have reached a speed of about 2 million pixels/sec, where the iteration limit for each pixel is 1000. This will probably never match implementations in C, Rust, and other really fast languages. See some samples below. Each picture (1000x1000 pixels) computes in about 1 second.  
+
 <hr/>
 
 This command will produce a picture of the (entire) fractal
