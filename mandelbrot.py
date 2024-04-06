@@ -70,7 +70,7 @@ def F (x):
             # When threaded then split up the work in several worker threads (processes)
             sema = Semaphore(N_THREADS)
             # Calculate reasonable chunk length
-            chunkLength = int(max (len(x) / 8, 50000))
+            chunkLength = int(max (len(x) / (N_THREADS*2), 50000))
             divided = list(divide_chunks(x, chunkLength))
             divLength = len(divided)
             processes = list()
@@ -185,8 +185,9 @@ def main (args = None):
 
         splittedPath = P.COORDFILE.split("/")
         usedName = splittedPath [len(splittedPath)-1]
-        savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.png'
+        savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.{P.FILETYPE}'
         fig.savefig(savePath, dpi=P.DPI) 
+        #plt.show ()
         t2 = time()
         total = t2-t1
         print ("Picture generated and saved to <"+savePath+">. Time taken = " + str(round(total,2)))
