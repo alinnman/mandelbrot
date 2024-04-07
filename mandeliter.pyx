@@ -77,7 +77,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
     cdef double conv_limit        = cl
     cdef double conv_limit2       = conv_limit * conv_limit
     cdef double div_limit         = dl
-    cdef double div_limit2        = div_limit*div_limit
+    cdef double div_limit2        = div_limit  * div_limit
     cdef int    i                 = 0
     cdef int    nrIt              = nrOfIterations
     cdef double X1                = 0.0
