@@ -71,10 +71,10 @@ def F (x):
             sema = Semaphore(N_THREADS)
             # Calculate reasonable chunk length
             chunkLength = int(max (len(x) / (N_THREADS*2), 50000))
-            divided = list(divide_chunks(x, chunkLength))
-            divLength = len(divided)
-            processes = list()
-            queues = list ()
+            divided     = list(divide_chunks(x, chunkLength))
+            divLength   = len(divided)
+            processes   = list()
+            queues      = list ()
 
             results2 = list ()
             for index in range(divLength):
@@ -82,10 +82,10 @@ def F (x):
                     print ("Main    : create and start thread ", str(index))
                 queue1 = Queue ()
                 sema.acquire ()
-                x = Process(target=F_threaded, \
-                            args= (divided[index], sema, queue1, colorFactor, \
-                                   nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT,\
-                                   P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
+                x = Process(target= F_threaded, \
+                            args  = (divided[index], sema, queue1, colorFactor, \
+                                     nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT,\
+                                     P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
@@ -95,7 +95,7 @@ def F (x):
             for index, process in enumerate(processes):
                 if P.DEBUG:
                     print ("Main    : before joining process ", str(index))
-                returnedData = queues [index].get()
+                returnedData   = queues [index].get()
                 returnedObject = ploads (returnedData)
                 del returnedData
                 results2.append (returnedObject)
