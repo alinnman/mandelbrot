@@ -44,7 +44,7 @@ def parseArguments (args):
     help="Sample width of diagram. Default="+str(DIAGPOINTS), \
                         action="store", default=int(DIAGPOINTS))
     parser.add_argument("-ft", "--file_type",\
-    help="File type of generated picture (TIF, PNG, JPG, SVG). Default="+str(FILETYPE), \
+    help="File type of generated picture (TIF, PNG, JPG, SVG, Screen, None). Default="+str(FILETYPE), \
                         action="store", default=FILETYPE)                        
     parser.add_argument("-it", "--iterations",\
     help="Max nr of iterations. Default="+str(ITERATIONS), \
@@ -83,7 +83,12 @@ def parseArguments (args):
     COLORSTEEPNESS      = int       (va ['color_steepness'         ])
     SELECTOR            = int       (va ['picture_selector'        ])
     PARTIALESCAPECOUNT  = bool      (va ['partial_escape_count'    ] != str(False))
-    FILETYPE            =            va ['file_type'               ]    
+    FILETYPE            =            va ['file_type'               ]
+    if FILETYPE.upper() == "SCREEN":
+        FILETYPE = "Screen"
+    elif FILETYPE.upper() == "NONE":
+        FILETYPE = None 
+    
 
 
     
