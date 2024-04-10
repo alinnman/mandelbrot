@@ -3,6 +3,7 @@
 
 import sys
 from libc.math cimport log as c_log, sin as c_sin, cos as c_cos, exp as c_exp
+from libc.complex cimport creal as c_real, cimag as c_imag
 import cython
 
 cdef int growthCounter = 0
@@ -13,7 +14,7 @@ def resetColorMap ():
     global colorCodeMap
     colorCodeMap = {}
     
-cdef double complex complex_exp (val : cython.complex)  : 
+cdef double complex complex_exp (double complex val) :
     cdef double         aPart = c_exp (val.real)
     cdef double complex bPart = c_cos (val.imag) + 1j*c_sin (val.imag)
     return aPart * bPart
@@ -89,12 +90,12 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
     #    return 0
 
     while i < nrIt: 
-        newResult        = result*result  + cc
-        X1               = newResult.real - result.real
-        X2               = newResult.imag - result.imag
-        newAbsDiffResult = X1*X1          + X2*X2
-        newAbsResult     = newResult.real * newResult.real +\
-                           newResult.imag * newResult.imag
+        newResult        = result*result    +cc
+        X1               = c_real(newResult)-c_real(result)
+        X2               = c_imag(newResult)-c_imag(result) 
+        newAbsDiffResult = X1*X1            +X2*X2
+        newAbsResult     = c_real(newResult)*c_real(newResult) +\
+                           c_imag(newResult)*c_imag(newResult)
         if newAbsDiffResult < conv_limit2:
             # Convergence found
             reportGrowth ()
@@ -108,8 +109,8 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
             if debug: 
                 printOut ("E")
             if pe:
-                ratio = c_log(div_limit2/absResult) / c_log(newAbsResult/absResult)
-                return colorCode (i + 1.5 + ratio, False, colorFactor, offset, cs, cd)
+                X1 = c_log(div_limit2/absResult) / c_log(newAbsResult/absResult)
+                return colorCode (i + 1.5 + X1, False, colorFactor, offset, cs, cd)
             else:
                 return colorCode (i + 1, True, colorFactor, offset, cs, cd)
         result = newResult

@@ -1,3 +1,3 @@
-REM Run this script to build the cython modules
+REM Run this script to build the cython code
 
-python setup.py build_ext --inplace
+cythonize -a -i mandeliter.pyx

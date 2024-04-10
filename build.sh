@@ -1,5 +1,4 @@
 #!/bin/bash
 
-# Run this script to build the cython modules
-
-python setup.py build_ext --inplace
+# Run this script to build the cython code
+cythonize -a -i mandeliter.pyx
