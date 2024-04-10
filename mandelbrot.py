@@ -185,7 +185,17 @@ def main (args = None):
 
         splittedPath = P.COORDFILE.split("/")
         usedName = splittedPath [len(splittedPath)-1]
-        savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.png'
+        
+        #from PIL import Image
+        #import numpy as np
+        #import matplotlib.pyplot as plt
+
+        #data = np.random.random((100, 100))
+        #cm = plt.get_cmap('viridis')
+        #img = Image.fromarray((cm(data)[:, :, :3] * 255).astype(np.uint8))
+        #img.save('image.png')        
+        
+        savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.tif'
         fig.savefig(savePath, dpi=P.DPI) 
         t2 = time()
         total = t2-t1
