@@ -1,8 +1,8 @@
 try:
-    from numpy import array
-    from os import environ, path, makedirs
-    import parameters as P
+    from numpy      import array
+    from os         import environ, path, makedirs
     from mandeliter import growth
+    import parameters as P    
 
     # LAZY imports
     # from matplotlib import pyplot as plt
@@ -37,7 +37,7 @@ def divide_chunks(l, n):
 def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd):
     # Section for filling data used in multithreading
     try:
-        from pickle import dumps as pdumps
+        from pickle     import dumps as pdumps
         from mandeliter import growth
         retval = array([growth(ci, cf, ni, offset, cs, pe, cl, dl, debug, cd) for ci in x])
         rp = pdumps (retval)
@@ -48,7 +48,6 @@ def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd):
         raise ki
     finally:
         sema.release ()
-
 
 def F (x):
     # Callback for cplot
@@ -63,18 +62,19 @@ def F (x):
         return retval
     else:
         try:
-            from itertools import chain
+            from itertools       import chain
             from multiprocessing import Process, Semaphore, Queue
-            from pickle import loads as ploads
+            from pickle          import loads as ploads
+            from time            import time
 
             # When threaded then split up the work in several worker threads (processes)
             sema = Semaphore(N_THREADS)
             # Calculate reasonable chunk length
-            chunkLength = int(max (len(x) / 8, 50000))
-            divided = list(divide_chunks(x, chunkLength))
-            divLength = len(divided)
-            processes = list()
-            queues = list ()
+            chunkLength = int(max (len(x) / (N_THREADS*2), 50000))
+            divided     = list(divide_chunks(x, chunkLength))
+            divLength   = len(divided)
+            processes   = list()
+            queues      = list ()
 
             results2 = list ()
             for index in range(divLength):
@@ -82,20 +82,21 @@ def F (x):
                     print ("Main    : create and start thread ", str(index))
                 queue1 = Queue ()
                 sema.acquire ()
-                x = Process(target=F_threaded, \
-                            args= (divided[index], sema, queue1, colorFactor, \
-                                   nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT,\
-                                   P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
+                x = Process(target= F_threaded, \
+                            args  = (divided[index], sema, queue1, colorFactor, \
+                                     nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT,\
+                                     P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
                 if P.DEBUG:
                     print ("Started")
 
+            collectionStartTime = time ()
             for index, process in enumerate(processes):
                 if P.DEBUG:
                     print ("Main    : before joining process ", str(index))
-                returnedData = queues [index].get()
+                returnedData   = queues [index].get()
                 returnedObject = ploads (returnedData)
                 del returnedData
                 results2.append (returnedObject)
@@ -103,6 +104,9 @@ def F (x):
                 process.join()
                 if P.DEBUG:
                     print ("Main    : process ", str(index), "done")
+            collectionEndTime = time ()
+            collectionTime = collectionEndTime - collectionStartTime
+            print ("Collection time = " + str(round(collectionTime,2)))
 
             retval = array(list(chain.from_iterable(results2)))
             del queues
@@ -124,13 +128,13 @@ def main (args = None):
     global offset
 
     from matplotlib import pyplot as plt
-    from cplot import plot as complex_plot
-    from time import time
-    from gc import collect
-    from sys import argv
-    from importlib import util as importUtil
-    import picindices as PI
+    from cplot      import plot as complex_plot
+    from time       import time
+    from gc         import collect
+    from sys        import argv
+    from importlib  import util as importUtil
     from mandeliter import resetColorMap
+    import picindices as PI    
     
     if args == None:
         args = argv[1:]
@@ -183,25 +187,18 @@ def main (args = None):
         print ("Execution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
 
-        splittedPath = P.COORDFILE.split("/")
-        usedName = splittedPath [len(splittedPath)-1]
-        
-        #from PIL import Image
-        #import numpy as np
-        #import matplotlib.pyplot as plt
-
-        #data = np.random.random((100, 100))
-        #cm = plt.get_cmap('viridis')
-        #img = Image.fromarray((cm(data)[:, :, :3] * 255).astype(np.uint8))
-        #img.save('image.png')        
-        
-        savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.tif'
-        fig.savefig(savePath, dpi=P.DPI) 
-        t2 = time()
-        total = t2-t1
-        print ("Picture generated and saved to <"+savePath+">. Time taken = " + str(round(total,2)))
-
-        totalTotal += total
+        if P.FILETYPE == "Screen":
+            plt.show ()
+        elif P.FILETYPE != None: 
+            splittedPath = P.COORDFILE.split("/")
+            usedName = splittedPath [len(splittedPath)-1]
+            savePath = f'pictures/mandelbrot_{usedName}.{P.DIAGPOINTS:04d}.{picNum:06d}.{P.FILETYPE}'
+            fig.savefig(savePath, dpi=P.DPI) 
+            t2 = time()
+            total = t2-t1
+            print ("Picture generated and saved to <"+savePath+">. Time taken = " + str(round(total,2)))
+            totalTotal += total
+ 
         fig.clf ()
         plt.close ()
         collect ()
