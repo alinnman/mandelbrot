@@ -54,12 +54,15 @@ cdef printOut (s):
     sys.stdout.write (s)
     sys.stdout.flush ()    
 
-cdef reportGrowth (index):
+cdef reportGrowth (index, debug):
     # Show progress
     global growthCounter
     growthCounter += 1
     if growthCounter % 10000 == 0:
-        printOut (str(index))
+        if debug:
+            printOut ("<"+str(index)+">")
+        else:
+            printOut (".")
  
 def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, index) :
 	
@@ -98,14 +101,14 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
                            newResult.imag*newResult.imag
         if newAbsDiffResult < conv_limit2:
             # Convergence found
-            reportGrowth (index)
+            reportGrowth (index, debug)
             if debug:
                 printOut ("S")
             # Assign zero = convergence = Black color
             return 0
         elif newAbsResult > div_limit2:
             # Divergence found. Find escape count and assign color.
-            reportGrowth (index)
+            reportGrowth (index, debug)
             if debug: 
                 printOut ("E")
             if pe:
@@ -118,7 +121,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
         absResult     = newAbsResult
         i             = i+1
     # Search exhausted. Assume looping.
-    reportGrowth (index)
+    reportGrowth (index, debug)
     if debug:
         printOut ("!")
     return 0
