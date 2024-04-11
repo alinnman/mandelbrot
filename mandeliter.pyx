@@ -103,14 +103,14 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
             # Convergence found
             reportGrowth (index, debug)
             if debug:
-                printOut ("S")
+                printOut ("C")
             # Assign zero = convergence = Black color
             return 0
         elif newAbsResult > div_limit2:
             # Divergence found. Find escape count and assign color.
             reportGrowth (index, debug)
             if debug: 
-                printOut ("E")
+                printOut ("D")
             if pe:
                 X1 = c_log(div_limit2/absResult) / c_log(newAbsResult/absResult)
                 return colorCode (i + 1.5 + X1, False, colorFactor, offset, cs, cd)
@@ -123,7 +123,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
     # Search exhausted. Assume looping.
     reportGrowth (index, debug)
     if debug:
-        printOut ("!")
+        printOut ("E")
     return 0
 
 
