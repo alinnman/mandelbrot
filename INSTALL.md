@@ -1,9 +1,10 @@
-Requirements
+# Requirements
 
 * Windows 10/11 or Linux. 
 * Installation of C compiler
 * Python 3 environment
 * Git for cloning or forking the code
+
 # Build and run
 
 You must start by cloning <a href="https://github.com/alinnman/cplot2">my repository cplot2</a>. It is a fork of <a href="https://github.com/nschloe/cplot.git">the official PyPi cplot library</a>. 
