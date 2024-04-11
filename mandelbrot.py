@@ -1,6 +1,6 @@
 try:
     from numpy      import array
-    from os         import environ, path, makedirs
+    from os         import path, makedirs
     from mandeliter import growth
     import parameters as P    
 
@@ -18,28 +18,18 @@ except BaseException as be:
     print ("Interrupted while loading packages")
     raise be
 
-if P.PARALELL:
-    N_THREADS = P.MAXRUNNINGPROCESSES
-    environ['OMP_NUM_THREADS'] = str(N_THREADS)
-    environ['OPENBLAS_NUM_THREADS'] = str(N_THREADS)
-    environ['MKL_NUM_THREADS'] = str(N_THREADS)
-    environ['VECLIB_MAXIMUM_THREADS'] = str(N_THREADS)
-    environ['NUMEXPR_NUM_THREADS'] = str(N_THREADS)
-else:
-    N_THREADS = 1
-
 colorFactor = 0
 
 def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd):
+def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd, index):
     # Section for filling data used in multithreading
     try:
         from pickle     import dumps as pdumps
         from mandeliter import growth
-        retval = array([growth(ci, cf, ni, offset, cs, pe, cl, dl, debug, cd) for ci in x])
+        retval = array([growth(ci, cf, ni, offset, cs, pe, cl, dl, debug, cd, index) for ci in x])
         rp = pdumps (retval)
         del retval
         queue1.put (rp)
@@ -54,11 +44,11 @@ def F (x):
     global nrOfIterations
     global offset
 
-    if N_THREADS == 1:
+    if P.N_THREADS == 1:
         # When non-threaded just fill the data.
         retval = array([growth(ci, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS,\
                                P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT,\
-                               P.DEBUG, P.COLORDAMPENING) for ci in x])
+                               P.DEBUG, P.COLORDAMPENING, 0) for ci in x])
         return retval
     else:
         try:
@@ -68,9 +58,9 @@ def F (x):
             from time            import time
 
             # When threaded then split up the work in several worker threads (processes)
-            sema = Semaphore(N_THREADS)
+            sema = Semaphore(P.N_THREADS)
             # Calculate reasonable chunk length
-            chunkLength = int(max (len(x) / (N_THREADS*2), 50000))
+            chunkLength = int(max (len(x) / (P.N_THREADS*2), 50000))
             divided     = list(divide_chunks(x, chunkLength))
             divLength   = len(divided)
             processes   = list()
@@ -78,14 +68,14 @@ def F (x):
 
             results2 = list ()
             for index in range(divLength):
-                if P.DEBUG:
+                if P.DEBUG: 
                     print ("Main    : create and start thread ", str(index))
                 queue1 = Queue ()
                 sema.acquire ()
                 x = Process(target= F_threaded, \
                             args  = (divided[index], sema, queue1, colorFactor, \
                                      nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT,\
-                                     P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING))
+                                     P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING, index))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
@@ -106,7 +96,8 @@ def F (x):
                     print ("Main    : process ", str(index), "done")
             collectionEndTime = time ()
             collectionTime = collectionEndTime - collectionStartTime
-            print ("Collection time = " + str(round(collectionTime,2)))
+            if P.DEBUG:
+                print ("Collection time = " + str(round(collectionTime,2)))
 
             retval = array(list(chain.from_iterable(results2)))
             del queues
@@ -166,13 +157,13 @@ def main (args = None):
             nrOfIterations = picdata.COORDS[picNum][PI.NROFITERATIONS]
             if nrOfIterations == -1:
                 nrOfIterations = P.ITERATIONS
-        except:
+        except IndexError:
             pass
 
         offset = 0
         try:
             offset = picdata.COORDS[picNum][PI.COLOR_OFFSET]
-        except:
+        except IndexError:
             pass
 
         colorFactor = picdata.COORDS[picNum][PI.COLOR_FACTOR]
@@ -184,9 +175,9 @@ def main (args = None):
                        add_colorbars=False, add_axes_labels=False)
         t1 = time()
         total = t1-t0
-        print ("Execution time (numeric generation) = " + str(round(total,2)))
+        print ("\nExecution time (numeric generation) = " + str(round(total,2)))
         totalTotal += total
-
+        
         if P.FILETYPE == "Screen":
             plt.show ()
         elif P.FILETYPE != None: 
@@ -198,7 +189,7 @@ def main (args = None):
             total = t2-t1
             print ("Picture generated and saved to <"+savePath+">. Time taken = " + str(round(total,2)))
             totalTotal += total
- 
+        
         fig.clf ()
         plt.close ()
         collect ()

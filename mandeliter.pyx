@@ -3,7 +3,7 @@
 
 import sys
 from libc.math cimport log as c_log, sin as c_sin, cos as c_cos, exp as c_exp
-from libc.complex cimport creal as c_real, cimag as c_imag
+#from libc.complex cimport creal as c_real, cimag as c_imag
 import cython
 
 cdef int growthCounter = 0
@@ -54,14 +54,14 @@ cdef printOut (s):
     sys.stdout.write (s)
     sys.stdout.flush ()    
 
-cdef reportGrowth ():
+cdef reportGrowth (index):
     # Show progress
     global growthCounter
     growthCounter += 1
     if growthCounter % 10000 == 0:
-        printOut (".")
+        printOut (str(index))
  
-def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
+def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, index) :
 	
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
@@ -91,21 +91,21 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
 
     while i < nrIt: 
         newResult        = result*result    +cc
-        X1               = c_real(newResult)-c_real(result)
-        X2               = c_imag(newResult)-c_imag(result) 
+        X1               = newResult.real-result.real
+        X2               = newResult.imag-result.imag
         newAbsDiffResult = X1*X1            +X2*X2
-        newAbsResult     = c_real(newResult)*c_real(newResult) +\
-                           c_imag(newResult)*c_imag(newResult)
+        newAbsResult     = newResult.real*newResult.real +\
+                           newResult.imag*newResult.imag
         if newAbsDiffResult < conv_limit2:
             # Convergence found
-            reportGrowth ()
+            reportGrowth (index)
             if debug:
                 printOut ("S")
             # Assign zero = convergence = Black color
             return 0
         elif newAbsResult > div_limit2:
             # Divergence found. Find escape count and assign color.
-            reportGrowth ()
+            reportGrowth (index)
             if debug: 
                 printOut ("E")
             if pe:
@@ -118,7 +118,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd) :
         absResult     = newAbsResult
         i             = i+1
     # Search exhausted. Assume looping.
-    reportGrowth ()
+    reportGrowth (index)
     if debug:
         printOut ("!")
     return 0

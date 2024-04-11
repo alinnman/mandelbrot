@@ -1,5 +1,6 @@
 import argparse
 from multiprocessing import cpu_count
+from os import environ
 
 # Picture rendering
 DPI=300
@@ -16,7 +17,7 @@ DIVERGENCE_LIMIT = 2
 CONVERGENCE_LIMIT = 1e-6
 
 # Process execution
-PARALELL = True
+#PARALELL = True
 #CHUNKLENGTH = 50000
 MAXRUNNINGPROCESSES = max(1, cpu_count()-4) 
 
@@ -30,9 +31,11 @@ COLORDAMPENING = 1
 COORDFILE = "picdata/picdata.py"
 SELECTOR = -1
 
+N_THREADS = -1
+
 def parseArguments (args): 
     global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, \
-           COORDFILE, COLORSTEEPNESS, SELECTOR, PARTIALESCAPECOUNT, FILETYPE
+           COORDFILE, COLORSTEEPNESS, SELECTOR, PARTIALESCAPECOUNT, FILETYPE, N_THREADS, DEBUG
     
     parser = argparse.ArgumentParser(prog = "mandelbrot", description='Mandelbrot plotter',\
                                      epilog='This is a simple demo of plotting the Mandelbrot fractal')
@@ -68,7 +71,11 @@ def parseArguments (args):
                         action="store", default=SELECTOR)   
     parser.add_argument("-pe", "--partial_escape_count",\
     help="Use partial escape count. Will produce prettier images but costs some CPU time. Default = "+str(PARTIALESCAPECOUNT), \
-                        action="store", default=PARTIALESCAPECOUNT)                              
+                        action="store", default=PARTIALESCAPECOUNT)   
+
+    parser.add_argument("-d","--debug", \
+                       help="Show debug info. Default = Not Set", \
+                       action="store_const", const="True")                         
                                       
     argsParsed = parser.parse_args(args)
     
@@ -88,6 +95,20 @@ def parseArguments (args):
         FILETYPE = "Screen"
     elif FILETYPE.upper() == "NONE":
         FILETYPE = None 
+    DEBUG               =           (va ['debug'                   ]) == str(True) 
+        
+    if MAXRUNNINGPROCESSES > 1:
+        N_THREADS = MAXRUNNINGPROCESSES
+        environ['OMP_NUM_THREADS'] = str(N_THREADS)
+        environ['OPENBLAS_NUM_THREADS'] = str(N_THREADS)
+        environ['MKL_NUM_THREADS'] = str(N_THREADS)
+        environ['VECLIB_MAXIMUM_THREADS'] = str(N_THREADS)
+        environ['NUMEXPR_NUM_THREADS'] = str(N_THREADS)
+    else:
+        N_THREADS = 1
+        
+        
+        
     
 
 

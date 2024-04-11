@@ -4,6 +4,7 @@ Requirements
 * Installation of C compiler
 * Python 3 environment
 * Git for cloning or forking the code
+# Build and run
 
 You must start by cloning <a href="https://github.com/alinnman/cplot2">my repository cplot2</a>. It is a fork of <a href="https://github.com/nschloe/cplot.git">the official PyPi cplot library</a>. 
 
@@ -30,4 +31,7 @@ Parameters are shown using help switch
 
 For examples see the <a href="README.md">README file</a>
 
+# Tips on environment (Python and C)
 
+I have used <a href="https://www.anaconda.com/download/">Anaconda</a> as <b>Python</b> environment, both on Windows and Linux. 
+On Windows I have installed Visual Studio wich complete C compiler support. On Linux I use the standard C compiler supplied with the Ubuntu distribution. 
