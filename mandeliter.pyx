@@ -16,7 +16,7 @@ def resetColorMap ():
     
 cdef double complex complex_exp (double complex val) :
     cdef double         aPart = c_exp (val.real)
-    cdef double complex bPart = c_cos (val.imag) + 1j*c_sin (val.imag)
+    cdef double complex bPart = c_cos (val.imag) + 1j * c_sin (val.imag)
     return aPart * bPart
 
 cdef double complex colorValue (counter, colorFactor, offset, cs, cd):
