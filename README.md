@@ -78,5 +78,4 @@ This command will produce a starlike pattern.
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_stars.png" />
 
-This picture is an even more enigmatic illustration of the MLC ...
 
