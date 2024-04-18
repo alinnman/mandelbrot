@@ -13,7 +13,8 @@ A short note on <b>performance</b>: I wrote this just to refresh my Python progr
 
 <hr/>
 
-This command will produce a picture of the (entire) fractal
+This command will produce a picture of the (entire) fractal<br/>
+Magnification: 1x
 
     python mandelbrot.py -cd picdata/picdata.py -dp 1000 -dpi 400 -cs 4 -sel 0
 
@@ -22,25 +23,8 @@ This will result in a picture like this:
 
 <hr/>
 
-This command will produce a beautiful rendering of a spiral structure
-
-    python mandelbrot.py -cd picdata/picdata.spiral.py -dp 1000 -dpi 400 -cs 4
-
-This will result in a picture like this:     
-<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_spiral.png" />
-
-<hr/>
-
-This command will produce a structure with irregular branches
-
-    python mandelbrot.py -cd picdata/picdata.branches.py -dp 1000 -dpi 400 -cs 4
-
-This will result in a picture like this:     
-<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_branches.png" />
-
-<hr/>
-
-This command will produce a structure with a tree structure and a "minibrot" blob
+This command will produce a structure with a tree structure and a "minibrot" blob<br/>
+Magnification: 200x
 
     python mandelbrot.py -cd picdata/picdata.py -dp 1000 -dpi 400 -cs 4 -sel 5
 
@@ -49,7 +33,8 @@ This will result in a picture like this:
 
 <hr/>
 
-This command will produce a structure with a "seahorse" pattern
+This command will produce a structure with a "seahorse" pattern<br/>
+Magnification: 10000x
 
     python mandelbrot.py -cd picdata/picdata.py -dp 1000 -dpi 600 -cs 4 -sel 6
 
@@ -60,7 +45,18 @@ Note the little black pattern in the middle which is a "minibrot" and technicall
 
 <hr/>
 
-This command will produce a structure with a complex "frosty" pattern. It will also be rather demanding to compute this one.
+This command will produce a beautiful rendering of a spiral structure<br/>
+Magnification: 1000000x
+
+    python mandelbrot.py -cd picdata/picdata.spiral.py -dp 1000 -dpi 400 -cs 4
+
+This will result in a picture like this:     
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_spiral.png" />
+
+<hr/>
+
+This command will produce a structure with a complex "frosty" pattern. It will also be rather demanding to compute this one.<br/>
+Magnification: 2000000x
 
     python mandelbrot.py -cd picdata/picdata.frost.py -dp 2000 -dpi 600 -cs 4  
 
@@ -71,7 +67,18 @@ This picture is an even more enigmatic illustration of the MLC ...
 
 <hr/>
 
-This command will produce a starlike pattern.  
+This command will produce a structure with irregular branches<br/>
+Magnifigation: 200000000x
+
+    python mandelbrot.py -cd picdata/picdata.branches.py -dp 1000 -dpi 400 -cs 4
+
+This will result in a picture like this:     
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_branches.png" />
+
+<hr/>
+
+This command will produce a starlike pattern.<br/>
+Magnification: 1000000000x 
 
     python mandelbrot.py -cd picdata/picdata.square.py -ft TIF -dp 2000 -dpi 400
 
