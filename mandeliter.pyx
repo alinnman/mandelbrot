@@ -93,12 +93,12 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
     #    return 0
 
     while i < nrIt: 
-        newResult        = result*result    +cc
-        X1               = newResult.real-result.real
-        X2               = newResult.imag-result.imag
-        newAbsDiffResult = X1*X1            +X2*X2
-        newAbsResult     = newResult.real*newResult.real +\
-                           newResult.imag*newResult.imag
+        newResult        = result*result  + cc
+        X1               = newResult.real - result.real
+        X2               = newResult.imag - result.imag
+        newAbsDiffResult = X1*X1          + X2*X2
+        newAbsResult     = newResult.real * newResult.real +\
+                           newResult.imag * newResult.imag
         if newAbsDiffResult < conv_limit2:
             # Convergence found
             reportGrowth (index, debug)
@@ -120,7 +120,7 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
         absDiffResult = newAbsDiffResult
         absResult     = newAbsResult
         i             = i+1
-    # Search exhausted. Assume looping.
+    # Search exhausted = Assume looping = Black color
     reportGrowth (index, debug)
     if debug:
         printOut ("E")
