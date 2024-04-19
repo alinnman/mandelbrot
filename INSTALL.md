@@ -25,6 +25,10 @@ Execute one of the attached scripts <a href="build.sh">``build.sh``</a> (Linux) 
 Now you can run the program. Specifying no arguments will just generate a test suite. All generated images will be written to the ``pictures`` subdirectory. 
 
     python mandelbrot.py
+	
+You can also try running the tests
+
+    pytest
 
 Parameters are shown using help switch
 
