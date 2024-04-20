@@ -1,4 +1,4 @@
-# A very special spiral structure
+# The point of a mandelbrot bulb
 
 a = -0.9963357363826617
 b =  0.28912047057656354
