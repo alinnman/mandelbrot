@@ -19,19 +19,20 @@ cdef double complex complex_exp (double complex val) :
     cdef double complex bPart = c_cos (val.imag) + 1j * c_sin (val.imag)
     return aPart * bPart
 
-cdef double complex colorValue (counter, colorFactor, offset, cs, cd):
+cdef double complex colorValue (counter, colorFactor, offset, cs, cd, cx):
     cdef double c_counter = counter
     cdef double c_colorFactor = colorFactor
     cdef double c_offset = offset
     cdef double c_cs = cs
     cdef double c_cd = cd
+    cdef double c_cx = cx
     
     c_counter = c_counter - c_offset
     if c_counter < 1:
         c_counter = 1
-    return ((c_log(c_counter)**c_cs)/10)*1j*complex_exp(-1j*c_counter*c_colorFactor)/c_cd    
+    return ((c_log(c_counter)**c_cs)/cx)*1j*complex_exp(-1j*c_counter*c_colorFactor)/c_cd    
 
-cdef double complex colorCode (counter, useCache, colorFactor, offset, cs, cd):
+cdef double complex colorCode (counter, useCache, colorFactor, offset, cs, cd, cx):
     # global P.COLORSTEEPNESS
     global colorCodeMap
     retVal = 0
@@ -42,12 +43,12 @@ cdef double complex colorCode (counter, useCache, colorFactor, offset, cs, cd):
             return retVal
         except KeyError:
             # No color code found in cache. Compute a new one. 
-            retVal = colorValue (counter, colorFactor, offset, cs, cd)
+            retVal = colorValue (counter, colorFactor, offset, cs, cd, cx)
             # Cache the result
             colorCodeMap [counter] = retVal
             return retVal
     else:
-        return colorValue (counter, colorFactor, offset, cs, cd)
+        return colorValue (counter, colorFactor, offset, cs, cd, cx)
 
 
 cdef printOut (s):
@@ -64,7 +65,7 @@ cdef reportGrowth (index, debug):
         else:
             printOut (".")
  
-def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, index) :
+def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, index, cx) :
 	
     # This is the iteration used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
@@ -113,9 +114,9 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
                 printOut ("D")
             if pe:
                 X1 = c_log(div_limit2/absResult) / c_log(newAbsResult/absResult)
-                return colorCode (i + 1.5 + X1, False, colorFactor, offset, cs, cd)
+                return colorCode (i + 1.5 + X1, False, colorFactor, offset, cs, cd, cx)
             else:
-                return colorCode (i + 1, True, colorFactor, offset, cs, cd)
+                return colorCode (i + 1, True, colorFactor, offset, cs, cd, cx)
         result = newResult
         absDiffResult = newAbsDiffResult
         absResult     = newAbsResult

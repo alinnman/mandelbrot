@@ -24,12 +24,12 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd, index):
+def F_threaded (x, sema, queue1, cf, ni, offset, cs, pe, cl, dl, debug, cd, index, cx):
     # Section for filling data used in multithreading
     try:
         from pickle     import dumps as pdumps
         from mandeliter import growth
-        retval = array([growth(ci, cf, ni, offset, cs, pe, cl, dl, debug, cd, index) for ci in x])
+        retval = array([growth(ci, cf, ni, offset, cs, pe, cl, dl, debug, cd, index, cx) for ci in x])
         rp = pdumps (retval)
         del retval
         queue1.put (rp)
@@ -48,7 +48,7 @@ def F (x):
         # When non-threaded just fill the data.
         retval = array([growth(ci, colorFactor, nrOfIterations, offset, P.COLORSTEEPNESS,\
                                P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT,\
-                               P.DEBUG, P.COLORDAMPENING, 0) for ci in x])
+                               P.DEBUG, P.COLORDAMPENING, 0, P.COLORX) for ci in x])
         return retval
     else:
         try:
@@ -75,7 +75,8 @@ def F (x):
                 x = Process(target= F_threaded, \
                             args  = (divided[index], sema, queue1, colorFactor, \
                                      nrOfIterations, offset, P.COLORSTEEPNESS, P.PARTIALESCAPECOUNT,\
-                                     P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING, index))
+                                     P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT, P.DEBUG, P.COLORDAMPENING,\
+                                     index, P.COLORX))
                 processes.append(x)
                 queues.append (queue1)
                 x.start()
