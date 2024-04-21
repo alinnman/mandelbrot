@@ -67,6 +67,16 @@ This picture is an even more enigmatic illustration of the MLC ...
 
 <hr/>
 
+This command will show the tip/edge of a "brot" element. This one requires a lot of CPU time due to many iterations needed.<br/>
+Magnification: 10000000x
+
+    python mandelbrot.py -dpi 400 -dp 2000 -ft PNG -cd picdata/picdata.edge.py -cx 2000000 -cs 8
+
+This will result in a picture like this:     
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_edge.png" />
+
+<hr/>
+
 This command will produce a structure with irregular branches<br/>
 Magnifigation: 200000000x
 
