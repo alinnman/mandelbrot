@@ -3,7 +3,6 @@
 
 import sys
 from libc.math cimport log as c_log, sin as c_sin, cos as c_cos, exp as c_exp
-#from libc.complex cimport creal as c_real, cimag as c_imag
 import cython
 
 cdef int growthCounter = 0
@@ -33,7 +32,6 @@ cdef double complex colorValue (counter, colorFactor, offset, cs, cd, cx):
     return ((c_log(c_counter)**c_cs)/cx)*1j*complex_exp(-1j*c_counter*c_colorFactor)/c_cd    
 
 cdef double complex colorCode (counter, useCache, colorFactor, offset, cs, cd, cx):
-    # global P.COLORSTEEPNESS
     global colorCodeMap
     retVal = 0
     if useCache:
@@ -67,7 +65,7 @@ cdef reportGrowth (index, debug):
  
 def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, index, cx) :
 	
-    # This is the iteration used to find convergence, looping or divergence
+    # This is the iteration (inner loop) used to find convergence, looping or divergence
     # Escape count can be calculated for divergence
     
     # The code is optimized using Cython 
@@ -88,18 +86,12 @@ def growth (c, colorFactor, nrOfIterations, offset, cs, pe, cl, dl, debug, cd, i
     cdef double X1                = 0.0
     cdef double X2                = 0.0
 
-    #if abs(cc) <= 0.25:
-    #    # No need to iterate here. It will converge.
-    #    reportGrowth ()
-    #    return 0
-
     while i < nrIt: 
-        newResult        = result*result  + cc
-        X1               = newResult.real - result.real
-        X2               = newResult.imag - result.imag
-        newAbsDiffResult = X1*X1          + X2*X2
-        newAbsResult     = newResult.real * newResult.real +\
-                           newResult.imag * newResult.imag
+        newResult        = result*result                 + cc
+        X1               = newResult.real                - result.real
+        X2               = newResult.imag                - result.imag
+        newAbsDiffResult = X1*X1                         + X2*X2
+        newAbsResult     = newResult.real*newResult.real + newResult.imag*newResult.imag
         if newAbsDiffResult < conv_limit2:
             # Convergence found
             reportGrowth (index, debug)

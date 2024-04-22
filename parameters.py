@@ -106,6 +106,8 @@ def parseArguments (args):
         environ['NUMEXPR_NUM_THREADS'] = str(N_THREADS)
     else:
         N_THREADS = 1
+    # Eliminate screen session warnings    
+    environ["XDG_SESSION_TYPE"] = "xcb"
         
         
         
