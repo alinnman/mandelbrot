@@ -26,6 +26,7 @@ PARTIALESCAPECOUNT = True
 ## Experimental parameters which may need to be adjusted for deep zooms with small gradients
 COLORSTEEPNESS = 3
 COLORDAMPENING = 1
+COLORX         = 10
 
 # Picture selection
 COORDFILE = "picdata/picdata.py"
@@ -35,7 +36,8 @@ N_THREADS = -1
 
 def parseArguments (args): 
     global DPI, DIAGPOINTS, ITERATIONS, CHUNKLENGTH, MAXRUNNINGPROCESSES, \
-           COORDFILE, COLORSTEEPNESS, SELECTOR, PARTIALESCAPECOUNT, FILETYPE, N_THREADS, DEBUG
+           COORDFILE, COLORSTEEPNESS, SELECTOR, PARTIALESCAPECOUNT, FILETYPE, N_THREADS, DEBUG, \
+           COLORX
     
     parser = argparse.ArgumentParser(prog = "mandelbrot", description='Mandelbrot plotter',\
                                      epilog='This is a simple demo of plotting the Mandelbrot fractal')
@@ -60,7 +62,10 @@ def parseArguments (args):
                         action="store", default=COORDFILE)     
     parser.add_argument("-cs", "--color_steepness",\
     help="Steepness in colors (contrast). Default="+str(COLORSTEEPNESS), \
-                        action="store", default=COLORSTEEPNESS)      
+                        action="store", default=COLORSTEEPNESS)   
+    parser.add_argument("-cx", "--color_expansion",\
+    help="Expansion in colors (darkness). Default="+str(COLORX), \
+                        action="store", default=COLORX)                              
     parser.add_argument("-sel", "--picture_selector",\
     help="Selection of a single image in a picture set. Default="+str(SELECTOR)+" (select all pictures)", \
                         action="store", default=SELECTOR)   
@@ -82,6 +87,7 @@ def parseArguments (args):
     MAXRUNNINGPROCESSES = int       (va ['max_running_processes'   ])     
     COORDFILE           =            va ['coordinate_file'         ]
     COLORSTEEPNESS      = int       (va ['color_steepness'         ])
+    COLORX              = int       (va ['color_expansion'         ])    
     SELECTOR            = int       (va ['picture_selector'        ])
     PARTIALESCAPECOUNT  = bool      (va ['partial_escape_count'    ] != str(False))
     FILETYPE            =            va ['file_type'               ]
@@ -100,6 +106,8 @@ def parseArguments (args):
         environ['NUMEXPR_NUM_THREADS'] = str(N_THREADS)
     else:
         N_THREADS = 1
+    # Eliminate screen session warnings    
+    environ["XDG_SESSION_TYPE"] = "xcb"
         
         
         

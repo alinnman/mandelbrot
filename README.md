@@ -55,15 +55,25 @@ This will result in a picture like this:
 
 <hr/>
 
-This command will produce a structure with a complex "frosty" pattern. It will also be rather demanding to compute this one.<br/>
+This command will produce a structure with a complex "frosty" pattern. <br/>
 Magnification: 2000000x
 
-    python mandelbrot.py -cd picdata/picdata.frost.py -dp 2000 -dpi 600 -cs 4  
+    python mandelbrot.py -cd picdata/picdata.frost.py -ft PNG -dp 2000 -dpi 400 -cs 8 -cx 1000000
 
 This will result in a picture like this:     
 <img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_frost.png" />
 
 This picture is an even more enigmatic illustration of the MLC ...
+
+<hr/>
+
+This command will show the tip/edge of a "brot" element. This one requires a lot of CPU time due to many iterations needed.<br/>
+Magnification: 10000000x
+
+    python mandelbrot.py -dpi 400 -dp 2000 -ft PNG -cd picdata/picdata.edge.py -cx 2000000 -cs 8
+
+This will result in a picture like this:     
+<img alt="alt_text" width="1000px" src="demo_pictures/mandelbrot_edge.png" />
 
 <hr/>
 

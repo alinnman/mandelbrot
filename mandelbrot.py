@@ -53,7 +53,7 @@ def F (x):
         # When non-threaded just fill the data.
         retval = array([growth(ci, COLOR_FACTOR, nrOfIterations, offset, P.COLORSTEEPNESS,\
                                P.PARTIALESCAPECOUNT, P.CONVERGENCE_LIMIT, P.DIVERGENCE_LIMIT,\
-                               P.DEBUG, P.COLORDAMPENING, 0) for ci in x])
+                               P.DEBUG, P.COLORDAMPENING, 0, P.COLORX) for ci in x])
         return retval
     else:
         try:
