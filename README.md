@@ -78,7 +78,7 @@ This will result in a picture like this:
 <hr/>
 
 This command will produce a structure with irregular branches<br/>
-Magnifigation: 200000000x
+Magnification: 200000000x
 
     python mandelbrot.py -cd picdata/picdata.branches.py -dp 1000 -dpi 400 -cs 4
 
